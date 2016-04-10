@@ -19,7 +19,6 @@ package com.andresrcb.gcmtest;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -101,11 +100,7 @@ public class RegistrationIntentService extends IntentService {
     private void sendRegistration(String token ){
 
     }
-    private void doGcmSendUpstreamMessage(String token) throws IOException{
-    GoogleCloudMessaging gcm=new GoogleCloudMessaging();
-        final Bundle data = new Bundle();
-        gcm.send(token,"Hola, funciona",data);
-    }
+
     /**
      * Subscribe to any GCM topics of interest, as defined by the TOPICS constant.
      *
