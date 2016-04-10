@@ -31,4 +31,25 @@
         android:layout_alignParentStart="true"
         android:layout_marginTop="50dp" />
 
+    <EditText
+        android:id="@+id/edit_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Name"/>
+    <EditText
+        android:id="@+id/edit_phone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Phone"/>
+    <Button
+        android:id="@+id/button_register"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Register"
+        android:layout_marginTop="41dp"
+        android:layout_below="@+id/upstream_text"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+
 </LinearLayout>

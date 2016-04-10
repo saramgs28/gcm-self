@@ -98,7 +98,9 @@ public class RegistrationIntentService extends IntentService {
         Registration regService = builder.build();
         regService.register(token).execute();
     }
+    private void sendRegistration(String token ){
 
+    }
     private void doGcmSendUpstreamMessage(String token) throws IOException{
     GoogleCloudMessaging gcm=new GoogleCloudMessaging();
         final Bundle data = new Bundle();
