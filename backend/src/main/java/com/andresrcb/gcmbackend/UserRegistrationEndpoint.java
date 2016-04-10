@@ -1,15 +1,10 @@
 package com.andresrcb.gcmbackend;
-
-/**
- * Created by siddharthmantri on 09/04/16.
- */
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
-import com.google.api.server.spi.response.CollectionResponse;
 
-import java.util.List;
 import java.util.logging.Logger;
+
 import javax.inject.Named;
 
 import static com.andresrcb.gcmbackend.OfyService.ofy;

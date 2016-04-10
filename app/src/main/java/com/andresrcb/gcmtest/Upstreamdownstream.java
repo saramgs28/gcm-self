@@ -14,12 +14,11 @@ import android.widget.Toast;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Upstreamdownstream extends AppCompatActivity implements OnClickListener {
 
@@ -74,7 +73,7 @@ public class Upstreamdownstream extends AppCompatActivity implements OnClickList
                     reqObject.put("username", username);
                     reqObject.put("phone", phone);
                     reqObject.put("regId", token);
-
+                    // Make API call to post data to API and create record
                 } catch(JSONException je){
 
                 }
