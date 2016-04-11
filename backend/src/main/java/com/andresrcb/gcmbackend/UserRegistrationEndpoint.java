@@ -1,7 +1,9 @@
 package com.andresrcb.gcmbackend;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.api.server.spi.config.ApiNamespace;
+
 
 import java.util.logging.Logger;
 
@@ -17,12 +19,13 @@ import static com.andresrcb.gcmbackend.OfyService.ofy;
                 ownerName = "gcmbackend.andresrcb.com",
                 packagePath=""
         )
+
 )
 
 
 public class UserRegistrationEndpoint {
     private static final Logger log = Logger.getLogger(UserRegistrationEndpoint.class.getName());
-    @ApiMethod(name = "register", httpMethod = "post")
+    @ApiMethod(name = "register", httpMethod = HttpMethod.POST)
     public void registerDevice(@Named("regId") String regId, @Named("username") String username, @Named("phone") String phone) {
         if(findRecord(regId) != null) {
             log.info("Device " + regId + " already registered, skipping register");
