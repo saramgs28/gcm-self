@@ -11,6 +11,8 @@ import java.util.logging.Logger;
 
 import javax.inject.Named;
 
+import static com.andresrcb.gcmbackend.OfyService.ofy;
+
 @Api(
         name = "usermessaging",
         version = "v1",
@@ -43,8 +45,11 @@ public class UserMessagingEndpoint {
         Sender sender = new Sender(API_KEY);
         Message msg = new Message.Builder().addData("message", message).build();
         //List<RegistrationRecord> records = ofy().load().type(RegistrationRecord.class).limit(10).list();
-        String receiverId = "5512148288";
-        Result r = sender.send(msg, receiverId, 5);
+//        String receiverId = "5512148288";
+
+
+        RegistrationRecord result = findRecord(phone);
+        Result r = sender.send(msg, result.getRegId(), 5);
         log.info("Data sent with id: "+r.getMessageId());
         /*for(RegistrationRecord record : records) {
             Result result = sender.send(msg, record.getRegId(), 5);
@@ -69,6 +74,10 @@ public class UserMessagingEndpoint {
                 }
             }
         }*/
+
+    }
+    private RegistrationRecord findRecord(String phone) {
+        return ofy().load().type(RegistrationRecord.class).filter("phone", phone).first().now();
     }
 }
 
