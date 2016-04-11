@@ -8,7 +8,6 @@ import com.google.api.server.spi.config.ApiNamespace;
 import java.util.logging.Logger;
 
 import javax.inject.Named;
-
 import static com.andresrcb.gcmbackend.OfyService.ofy;
 
 @Api(

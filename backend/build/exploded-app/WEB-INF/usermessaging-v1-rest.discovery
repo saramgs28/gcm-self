@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "\"u_zXkMELIlX4ktyNbM2XKD4vK8E/6t2l2PVn1CNlD6P8rWGpiutiRQw\"",
+ "etag": "\"u_zXkMELIlX4ktyNbM2XKD4vK8E/70lZ9UU04ZQ2ZSe6XxxYfmKTaX0\"",
  "discoveryVersion": "v1",
  "id": "usermessaging:v1",
  "name": "usermessaging",
@@ -77,7 +77,7 @@
    "methods": {
     "sendMessage": {
      "id": "usermessaging.userMessagingEndpoint.sendMessage",
-     "path": "{message}/{token}",
+     "path": "{message}/{phone}",
      "httpMethod": "POST",
      "parameters": {
       "message": {
@@ -85,7 +85,7 @@
        "required": true,
        "location": "path"
       },
-      "token": {
+      "phone": {
        "type": "string",
        "required": true,
        "location": "path"
@@ -93,7 +93,7 @@
      },
      "parameterOrder": [
       "message",
-      "token"
+      "phone"
      ],
      "scopes": [
       "https://www.googleapis.com/auth/userinfo.email"
