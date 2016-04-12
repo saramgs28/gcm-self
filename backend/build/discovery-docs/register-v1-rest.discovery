@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "\"u_zXkMELIlX4ktyNbM2XKD4vK8E/ixA--hbFfbBjIPU99VVNg6v_QSw\"",
+ "etag": "\"u_zXkMELIlX4ktyNbM2XKD4vK8E/sRQsREPX7bffu5Kdy3JcWYinRZs\"",
  "discoveryVersion": "v1",
  "id": "register:v1",
  "name": "register",
@@ -13,10 +13,10 @@
   "x32": "http://www.google.com/images/icons/product/search-32.gif"
  },
  "protocol": "rest",
- "baseUrl": "https://academic-pillar-124918.appspot.com/_ah/api/register/v1/registerDevice/",
- "basePath": "/_ah/api/register/v1/registerDevice/",
+ "baseUrl": "https://academic-pillar-124918.appspot.com/_ah/api/register/v1/",
+ "basePath": "/_ah/api/register/v1/",
  "rootUrl": "https://academic-pillar-124918.appspot.com/_ah/api/",
- "servicePath": "register/v1/registerDevice/",
+ "servicePath": "register/v1/",
  "batchPath": "batch",
  "parameters": {
   "alt": {
@@ -72,33 +72,38 @@
    }
   }
  },
+ "schemas": {
+  "RegistrationRecord": {
+   "id": "RegistrationRecord",
+   "type": "object",
+   "properties": {
+    "name": {
+     "type": "string"
+    },
+    "phone": {
+     "type": "string"
+    },
+    "regId": {
+     "type": "string"
+    },
+    "username": {
+     "type": "string"
+    }
+   }
+  }
+ },
  "methods": {
   "register": {
    "id": "register.register",
-   "path": "{regId}/{username}/{phone}",
+   "path": "registerDevice",
    "httpMethod": "POST",
-   "parameters": {
-    "phone": {
-     "type": "string",
-     "required": true,
-     "location": "path"
-    },
-    "regId": {
-     "type": "string",
-     "required": true,
-     "location": "path"
-    },
-    "username": {
-     "type": "string",
-     "required": true,
-     "location": "path"
-    }
+   "request": {
+    "$ref": "RegistrationRecord",
+    "parameterName": "resource"
    },
-   "parameterOrder": [
-    "regId",
-    "username",
-    "phone"
-   ],
+   "response": {
+    "$ref": "RegistrationRecord"
+   },
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
    ]

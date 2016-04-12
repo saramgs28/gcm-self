@@ -3,6 +3,7 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.api.server.spi.config.ApiNamespace;
+import com.google.appengine.api.urlfetch.HTTPMethod;
 
 
 import java.util.logging.Logger;
@@ -25,16 +26,17 @@ import static com.andresrcb.gcmbackend.OfyService.ofy;
 public class UserRegistrationEndpoint {
     private static final Logger log = Logger.getLogger(UserRegistrationEndpoint.class.getName());
     @ApiMethod(name = "register", httpMethod = HttpMethod.POST)
-    public void registerDevice(@Named("regId") String regId, @Named("username") String username, @Named("phone") String phone) {
-        if(findRecord(regId) != null) {
-            log.info("Device " + regId + " already registered, skipping register");
-            return;
+    public RegistrationRecord registerDevice(RegistrationRecord record){
+        if(findRecord(record.getRegId()) != null) {
+            log.info("Device " + record.getRegId() + " already registered, skipping register");
+            return null;
         }
-        RegistrationRecord record = new RegistrationRecord();
-        record.setRegId(regId);
-        record.setUsername(username);
-        record.setPhone(phone);
-        ofy().save().entity(record).now();
+        RegistrationRecord r = new RegistrationRecord();
+        r.setRegId(record.getRegId());
+        r.setUsername(record.getUsername());
+        r.setPhone(record.getPhone());
+        ofy().save().entity(r).now();
+        return r;
     }
     private RegistrationRecord findRecord(String regId) {
         return ofy().load().type(RegistrationRecord.class).filter("regId", regId).first().now();

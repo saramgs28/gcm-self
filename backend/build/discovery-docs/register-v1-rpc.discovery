@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"u_zXkMELIlX4ktyNbM2XKD4vK8E/ixA--hbFfbBjIPU99VVNg6v_QSw\"",
+ "etag": "\"u_zXkMELIlX4ktyNbM2XKD4vK8E/sRQsREPX7bffu5Kdy3JcWYinRZs\"",
  "discoveryVersion": "v1",
  "id": "register:v1",
  "name": "register",
@@ -70,28 +70,40 @@
    }
   }
  },
+ "schemas": {
+  "RegistrationRecord": {
+   "id": "RegistrationRecord",
+   "type": "object",
+   "properties": {
+    "name": {
+     "type": "string"
+    },
+    "phone": {
+     "type": "string"
+    },
+    "regId": {
+     "type": "string"
+    },
+    "username": {
+     "type": "string"
+    }
+   }
+  }
+ },
  "methods": {
   "register.register": {
    "id": "register.register",
    "parameters": {
-    "phone": {
-     "type": "string",
-     "required": true
-    },
-    "regId": {
-     "type": "string",
-     "required": true
-    },
-    "username": {
-     "type": "string",
-     "required": true
+    "resource": {
+     "$ref": "RegistrationRecord"
     }
    },
    "parameterOrder": [
-    "regId",
-    "username",
-    "phone"
+    "resource"
    ],
+   "returns": {
+    "$ref": "RegistrationRecord"
+   },
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
    ]
