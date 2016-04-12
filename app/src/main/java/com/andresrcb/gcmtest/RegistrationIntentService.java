@@ -22,13 +22,20 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.andresrcb.gcmbackend.registration.Registration;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -96,9 +103,6 @@ public class RegistrationIntentService extends IntentService {
                 .setRootUrl("https://momentchatv2.appspot.com/_ah/api/");
         Registration regService = builder.build();
         regService.register(token).execute();
-    }
-    private void sendRegistration(String token ){
-
     }
 
     /**

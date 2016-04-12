@@ -17,10 +17,16 @@ import com.google.android.gms.iid.InstanceID;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 
 public class Upstreamdownstream extends AppCompatActivity implements OnClickListener {
 
@@ -71,6 +77,7 @@ public class Upstreamdownstream extends AppCompatActivity implements OnClickList
         }
     }
     private void registerUser(){
+        final String URL = "https://momentchatv2.appspot.com/_ah/api/register/v1/registerDevice";
         if (uEditText.getText().toString().isEmpty() || pEditText.getText().toString().isEmpty())
             Toast.makeText(getApplicationContext(), "Please enter the username and password", Toast.LENGTH_LONG).show();
         else{
@@ -85,7 +92,17 @@ public class Upstreamdownstream extends AppCompatActivity implements OnClickList
                     reqObject.put("username", username);
                     reqObject.put("phone", phone);
                     reqObject.put("regId", token);
-                    // Make API call to post data to API and create record
+                    JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, URL, reqObject.toString(),
+                            new Response.Listener<JSONObject>() {
+                                @Override
+                                public void onResponse(JSONObject response) {
+                                    try{
+                                        String x = response.getString("name");
+                                    }catch(JSONException e){
+                                        Log.d("Fail", "Fail");
+                                    }
+                                }
+                            });
                 } catch(JSONException je){
 
                 }
