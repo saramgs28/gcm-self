@@ -27,6 +27,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 
 public class Upstreamdownstream extends AppCompatActivity implements OnClickListener {
 
@@ -77,6 +79,7 @@ public class Upstreamdownstream extends AppCompatActivity implements OnClickList
         }
     }
     private void registerUser(){
+        RequestQueue queue = Volley.newRequestQueue(this);
         final String URL = "https://momentchatv2.appspot.com/_ah/api/register/v1/registerDevice";
         if (uEditText.getText().toString().isEmpty() || pEditText.getText().toString().isEmpty())
             Toast.makeText(getApplicationContext(), "Please enter the username and password", Toast.LENGTH_LONG).show();
@@ -92,20 +95,27 @@ public class Upstreamdownstream extends AppCompatActivity implements OnClickList
                     reqObject.put("username", username);
                     reqObject.put("phone", phone);
                     reqObject.put("regId", token);
-                    JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, URL, reqObject.toString(),
+                    JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, URL, reqObject,
                             new Response.Listener<JSONObject>() {
                                 @Override
                                 public void onResponse(JSONObject response) {
-                                    try{
+                                    try {
                                         String x = response.getString("name");
-                                    }catch(JSONException e){
+                                    } catch (JSONException e) {
                                         Log.d("Fail", "Fail");
                                     }
                                 }
-                            });
+                            }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(getApplicationContext(),"Error connecting to the server",Toast.LENGTH_LONG).show();
+                        }
+                    });
+                    queue.add(req);
                 } catch(JSONException je){
 
                 }
+
             }catch(java.io.IOException e){
 
             }
