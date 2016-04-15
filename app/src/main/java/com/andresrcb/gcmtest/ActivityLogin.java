@@ -16,58 +16,53 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import android.widget.FrameLayout;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 
 public class ActivityLogin extends AppCompatActivity implements View.OnClickListener{
-
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    private static final String TAG = "MainActivity";
     Button login;
     EditText name;
     EditText phone;
     FrameLayout loadingScreen;
     ProgressBar loadingSpinner;
-
+    SharedPreferences sharedPreferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         login=(Button)findViewById(R.id.button_login);
-        login.setOnClickListener(this);
         loadingScreen = (FrameLayout) findViewById(R.id.loading_screen);
         loadingSpinner = (ProgressBar) findViewById(R.id.loading_spinner);
         loadingScreen.setVisibility(View.INVISIBLE);
         loadingSpinner.setVisibility(View.INVISIBLE);
         name=(EditText)findViewById(R.id.edit_name);
         phone=(EditText)findViewById(R.id.edit_phone);
+        login.setOnClickListener(this);
+        checkPlayServices();
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
     }
 
     @Override
     public void onClick(View v) {
-//        Intent i = new Intent(this, Main2Activity.class );
-//        startActivity(i);
-//        registerUser();
-//        String token = generateToken();
-//        loadingSpinner.setVisibility(View.INVISIBLE);
-//        if(token == null){
-//            Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_LONG).show();
-//        }else{
-//            Toast.makeText(getApplicationContext(), "Token Received, Logging in", Toast.LENGTH_LONG).show();
+        String token = generateToken();
+        loadingSpinner.setVisibility(View.VISIBLE);
+        if(token == null){
+            Toast.makeText(getApplicationContext(), "Token is not found"+token, Toast.LENGTH_LONG).show();
+        }else{
+            Toast.makeText(getApplicationContext(), token, Toast.LENGTH_LONG).show();
+            sharedPreferences.edit().putBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, true).apply();
 //            registerUser(token);
-//        }
-        try{
-            InstanceID instanceID = InstanceID.getInstance(this);
-            String token = instanceID.getToken("590942745468",
-                    GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
-            Log.i("Reg intent service", "GCM Token: "+token);
-//            return token;
-        }catch(java.io.IOException e){
-//            return null;
-            Toast.makeText(getApplicationContext(), "Fail", Toast.LENGTH_LONG).show();
         }
     }
     private void registerUser(String token){
@@ -100,22 +95,37 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
                     }
                 });
                 queue.add(req);
-            } catch(JSONException je){
+            } catch(JSONException e){
 
             }
         }
     }
     private String generateToken(){
-        loadingSpinner.setVisibility(View.VISIBLE);
         try{
             InstanceID instanceID = InstanceID.getInstance(this);
             String token = instanceID.getToken("590942745468",
                     GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
-            Log.i("Reg intent service", "GCM Token: "+token);
+            Log.i("tokenssssss: ", token);
             return token;
         }catch(java.io.IOException e){
+            Log.i("Error generated", e.getMessage());
             return null;
         }
+    }
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
     }
 }
 

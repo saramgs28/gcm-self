@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
     protected void newActivity ()
     {
-        Intent act=new Intent(this,Upstreamdownstream.class);
+        Intent act=new Intent(this,ActivityLogin.class);
         startActivity(act);
     }
     @Override
@@ -102,5 +102,8 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
         return true;
+    }
+    public static String getToken(){
+        return "";
     }
 }
