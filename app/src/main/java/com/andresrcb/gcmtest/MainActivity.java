@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Registering BroadcastReceiver
         registerReceiver();
-
         if (checkPlayServices()) {
             // Start IntentService to register this application with GCM.
             Intent intent = new Intent(this, RegistrationIntentService.class);
