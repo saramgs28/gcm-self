@@ -22,13 +22,20 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.widget.Toast;
 
-import com.andresrcb.gcmbackend.registration.Registration;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -92,13 +99,50 @@ public class RegistrationIntentService extends IntentService {
      * @param token The new token.
      */
     private void sendRegistrationToServer(String token) throws IOException {
-        Registration.Builder builder = new Registration.Builder(AndroidHttp.newCompatibleTransport(),
+        /*Registration.Builder builder = new Registration.Builder(AndroidHttp.newCompatibleTransport(),
                 new AndroidJsonFactory(), null)
                 .setRootUrl("https://momentchatv2.appspot.com/_ah/api/");
         Registration regService = builder.build();
-        regService.register(token).execute();
+       // regService.register(token).execute();*/
+        registerUser(token);
     }
+    private void registerUser(String token){
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String name = ActivityLogin.getName();
+        String phone = ActivityLogin.getPhone();
+        final String URL = "https://momentchatv2.appspot.com/_ah/api/register/v1/registerDevice";
+        if (name.isEmpty()|| phone.isEmpty())
+            Toast.makeText(getApplicationContext(), "Please enter the username and password", Toast.LENGTH_LONG).show();
+        else{
+            try{
+                JSONObject reqObject = new JSONObject();
+                String username = name;
+                String phone_number = phone;
+                reqObject.put("username", username);
+                reqObject.put("phone", phone_number);
+                reqObject.put("regId", token);
+                JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, URL, reqObject,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                try {
+                                    String x = response.getString("name");
+                                } catch (JSONException e) {
+                                    Log.d("Fail", "Fail");
+                                }
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getApplicationContext(),"Error connecting to the server",Toast.LENGTH_LONG).show();
+                    }
+                });
+                queue.add(req);
+            } catch(JSONException e){
 
+            }
+        }
+    }
     /**
      * Subscribe to any GCM topics of interest, as defined by the TOPICS constant.
      *

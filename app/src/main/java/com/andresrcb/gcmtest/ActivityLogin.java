@@ -32,8 +32,8 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
 
     Button login;
 
-    EditText name;
-    EditText phone;
+    static EditText name;
+    static EditText phone;
 
     //FrameLayout loadingScreen;
     String token;
@@ -60,38 +60,44 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
         name=(EditText)findViewById(R.id.edit_name);
         phone=(EditText)findViewById(R.id.edit_phone);
 
-        login.setVisibility(View.INVISIBLE);
-        name.setVisibility(View.INVISIBLE);
-        phone.setVisibility(View.INVISIBLE);
+
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
+
+    }
+
+    @Override
+    public void onClick(View v) {
         if (checkPlayServices()) {
             // Start IntentService to register this application with GCM.
             Intent intent = new Intent(this, RegistrationIntentService.class);
             startService(intent);
             token = RegistrationIntentService.getToken();
-            
+
+
             login.setVisibility(View.VISIBLE);
             phone.setVisibility(View.VISIBLE);
             name.setVisibility(View.VISIBLE);
             Toast.makeText(getApplicationContext(), "TOKEN:" + token, Toast.LENGTH_LONG).show();
         }
-    }
-
-    @Override
-    public void onClick(View v) {
-
-        loadingSpinner.setVisibility(View.VISIBLE);
+        /*loadingSpinner.setVisibility(View.VISIBLE);
         if(token == null){
             Toast.makeText(getApplicationContext(), "Token is not found"+token, Toast.LENGTH_LONG).show();
         }else{
             Toast.makeText(getApplicationContext(), token, Toast.LENGTH_LONG).show();
             sharedPreferences.edit().putBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, true).apply();
             registerUser(token);
-        }
+        }*/
     }
-
+    public static String getName()
+    {
+        return name.getText().toString();
+    }
+    public static String getPhone()
+    {
+        return phone.getText().toString();
+    }
     private void registerUser(String token){
         RequestQueue queue = Volley.newRequestQueue(this);
         final String URL = "https://momentchatv2.appspot.com/_ah/api/register/v1/registerDevice";
