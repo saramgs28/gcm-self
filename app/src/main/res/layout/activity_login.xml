@@ -12,20 +12,19 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/name"
+        android:id="@+id/edit_name"
         android:text="Name"
         android:layout_gravity="center"
-        android:layout_above="@+id/mobile_number"
+        android:layout_above="@+id/edit_phone"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Mobile number"
-        android:id="@+id/mobile_number"
+        android:text="Phone number"
+        android:id="@+id/edit_phone"
         android:layout_gravity="center"
-        android:phoneNumber="false"
         android:inputType="number"
         android:layout_above="@+id/button_login"
         android:layout_alignParentRight="true"
@@ -40,17 +39,12 @@
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 
-
-    <FrameLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_gravity="center"
-        android:background="@android:color/white"
-        android:id="@+id/loading_screen"/>
-
     <ProgressBar android:id="@+id/loading_spinner"
         style="?android:progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center" />
+        android:layout_gravity="center"
+        android:layout_below="@+id/button_login"
+        android:layout_alignRight="@+id/button_login"
+        android:layout_alignEnd="@+id/button_login" />
 </RelativeLayout>

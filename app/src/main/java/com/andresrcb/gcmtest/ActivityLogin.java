@@ -1,8 +1,10 @@
 package com.andresrcb.gcmtest;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -18,53 +20,78 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.google.android.gms.iid.InstanceID;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import android.widget.FrameLayout;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 
 public class ActivityLogin extends AppCompatActivity implements View.OnClickListener{
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    private static final String TAG = "MainActivity";
+    //private static final String TAG = "MainActivity";
+    private static final String TAG = "ActivityLogin";
+
     Button login;
+
     EditText name;
     EditText phone;
-    FrameLayout loadingScreen;
+
+    //FrameLayout loadingScreen;
+    String token;
     ProgressBar loadingSpinner;
+
     SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         login=(Button)findViewById(R.id.button_login);
-        loadingScreen = (FrameLayout) findViewById(R.id.loading_screen);
+        login.setOnClickListener(this);
+
+        //loadingScreen = (FrameLayout) findViewById(R.id.loading_screen);
+
         loadingSpinner = (ProgressBar) findViewById(R.id.loading_spinner);
-        loadingScreen.setVisibility(View.INVISIBLE);
-        loadingSpinner.setVisibility(View.INVISIBLE);
+
+        //loadingScreen.setVisibility(View.INVISIBLE);
+
+        //loadingSpinner.setVisibility(View.INVISIBLE);
+
         name=(EditText)findViewById(R.id.edit_name);
         phone=(EditText)findViewById(R.id.edit_phone);
-        login.setOnClickListener(this);
-        checkPlayServices();
+
+        login.setVisibility(View.INVISIBLE);
+        name.setVisibility(View.INVISIBLE);
+        phone.setVisibility(View.INVISIBLE);
+
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        if (checkPlayServices()) {
+            // Start IntentService to register this application with GCM.
+            Intent intent = new Intent(this, RegistrationIntentService.class);
+            startService(intent);
+            token = RegistrationIntentService.getToken();
+            
+            login.setVisibility(View.VISIBLE);
+            phone.setVisibility(View.VISIBLE);
+            name.setVisibility(View.VISIBLE);
+            Toast.makeText(getApplicationContext(), "TOKEN:" + token, Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
     public void onClick(View v) {
-        String token = generateToken();
+
         loadingSpinner.setVisibility(View.VISIBLE);
         if(token == null){
             Toast.makeText(getApplicationContext(), "Token is not found"+token, Toast.LENGTH_LONG).show();
         }else{
             Toast.makeText(getApplicationContext(), token, Toast.LENGTH_LONG).show();
             sharedPreferences.edit().putBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, true).apply();
-//            registerUser(token);
+            registerUser(token);
         }
     }
+
     private void registerUser(String token){
         RequestQueue queue = Volley.newRequestQueue(this);
         final String URL = "https://momentchatv2.appspot.com/_ah/api/register/v1/registerDevice";
@@ -100,7 +127,7 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
             }
         }
     }
-    private String generateToken(){
+    /*private String generateToken(){
         try{
             InstanceID instanceID = InstanceID.getInstance(this);
             String token = instanceID.getToken("590942745468",
@@ -111,7 +138,13 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
             Log.i("Error generated", e.getMessage());
             return null;
         }
-    }
+    }*/
+
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
     private boolean checkPlayServices() {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
