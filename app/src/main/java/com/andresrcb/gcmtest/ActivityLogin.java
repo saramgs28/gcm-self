@@ -27,7 +27,6 @@ import org.json.JSONObject;
 
 public class ActivityLogin extends AppCompatActivity implements View.OnClickListener{
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    //private static final String TAG = "MainActivity";
     private static final String TAG = "ActivityLogin";
 
     Button login;
@@ -35,7 +34,6 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
     static EditText name;
     static EditText phone;
 
-    //FrameLayout loadingScreen;
     String token;
     ProgressBar loadingSpinner;
 
@@ -49,22 +47,12 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
         login=(Button)findViewById(R.id.button_login);
         login.setOnClickListener(this);
 
-        //loadingScreen = (FrameLayout) findViewById(R.id.loading_screen);
-
         loadingSpinner = (ProgressBar) findViewById(R.id.loading_spinner);
-
-        //loadingScreen.setVisibility(View.INVISIBLE);
-
-        //loadingSpinner.setVisibility(View.INVISIBLE);
 
         name=(EditText)findViewById(R.id.edit_name);
         phone=(EditText)findViewById(R.id.edit_phone);
 
-
-
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-
     }
 
     @Override
@@ -75,20 +63,11 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
             startService(intent);
             token = RegistrationIntentService.getToken();
 
-
             login.setVisibility(View.VISIBLE);
             phone.setVisibility(View.VISIBLE);
             name.setVisibility(View.VISIBLE);
             Toast.makeText(getApplicationContext(), "TOKEN:" + token, Toast.LENGTH_LONG).show();
         }
-        /*loadingSpinner.setVisibility(View.VISIBLE);
-        if(token == null){
-            Toast.makeText(getApplicationContext(), "Token is not found"+token, Toast.LENGTH_LONG).show();
-        }else{
-            Toast.makeText(getApplicationContext(), token, Toast.LENGTH_LONG).show();
-            sharedPreferences.edit().putBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, true).apply();
-            registerUser(token);
-        }*/
     }
     public static String getName()
     {
@@ -133,19 +112,6 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
             }
         }
     }
-    /*private String generateToken(){
-        try{
-            InstanceID instanceID = InstanceID.getInstance(this);
-            String token = instanceID.getToken("590942745468",
-                    GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
-            Log.i("tokenssssss: ", token);
-            return token;
-        }catch(java.io.IOException e){
-            Log.i("Error generated", e.getMessage());
-            return null;
-        }
-    }*/
-
     /**
      * Check the device to make sure it has the Google Play Services APK. If
      * it doesn't, display a dialog that allows users to download the APK from
