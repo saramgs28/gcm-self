@@ -102,17 +102,19 @@ public class RegistrationIntentService extends IntentService {
         else{
             try{
                 JSONObject reqObject = new JSONObject();
-                String username = name;
-                String phone_number = phone;
-                reqObject.put("username", username);
-                reqObject.put("phone", phone_number);
+                reqObject.put("username", name);
+                reqObject.put("phone", phone);
                 reqObject.put("regId", token);
                 JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, URL, reqObject,
                         new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject response) {
                                 try {
-                                    String x = response.getString("name");
+                                    String x = response.getString("username");
+                                    Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    getApplication().startActivity(intent);
+//                                    startService(intent);
                                 } catch (JSONException e) {
                                     Log.d("Fail", "Fail");
                                 }
