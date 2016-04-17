@@ -4,7 +4,7 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.appengine.api.urlfetch.HTTPMethod;
-
+import org.json.simple.JSONObject;
 
 import java.util.logging.Logger;
 
@@ -31,6 +31,10 @@ public class UserRegistrationEndpoint {
             log.info("Device " + record.getRegId() + " already registered, skipping register");
             return null;
         }
+        if(findRecordByPhone(record.getPhone()) !=  null){
+            log.info("Device with phone: " + record.getPhone() + " already registered, skipping register");
+            return null;
+        }
         RegistrationRecord r = new RegistrationRecord();
         r.setRegId(record.getRegId());
         r.setUsername(record.getUsername());
@@ -40,5 +44,8 @@ public class UserRegistrationEndpoint {
     }
     private RegistrationRecord findRecord(String regId) {
         return ofy().load().type(RegistrationRecord.class).filter("regId", regId).first().now();
+    }
+    private RegistrationRecord findRecordByPhone(String phone){
+        return ofy().load().type(RegistrationRecord.class).filter("phone", phone).first().now();
     }
 }
