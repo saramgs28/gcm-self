@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"H01Z-1ikbwOw463Un2bFZHenx1g/70lZ9UU04ZQ2ZSe6XxxYfmKTaX0\"",
+ "etag": "\"H01Z-1ikbwOw463Un2bFZHenx1g/9xJmWhztwEq5swwFUFgmqk4JTPk\"",
  "discoveryVersion": "v1",
  "id": "usermessaging:v1",
  "name": "usermessaging",
@@ -70,23 +70,37 @@
    }
   }
  },
- "methods": {
-  "usermessaging.userMessagingEndpoint.sendMessage": {
-   "id": "usermessaging.userMessagingEndpoint.sendMessage",
-   "parameters": {
-    "message": {
-     "type": "string",
-     "required": true
+ "schemas": {
+  "MessageRecord": {
+   "id": "MessageRecord",
+   "type": "object",
+   "properties": {
+    "fromPhone": {
+     "type": "string"
     },
-    "phone": {
-     "type": "string",
-     "required": true
+    "textMessage": {
+     "type": "string"
+    },
+    "toPhone": {
+     "type": "string"
+    }
+   }
+  }
+ },
+ "methods": {
+  "usermessaging.message": {
+   "id": "usermessaging.message",
+   "parameters": {
+    "resource": {
+     "$ref": "MessageRecord"
     }
    },
    "parameterOrder": [
-    "message",
-    "phone"
+    "resource"
    ],
+   "returns": {
+    "$ref": "MessageRecord"
+   },
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
    ]

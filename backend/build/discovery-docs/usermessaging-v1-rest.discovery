@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "\"H01Z-1ikbwOw463Un2bFZHenx1g/70lZ9UU04ZQ2ZSe6XxxYfmKTaX0\"",
+ "etag": "\"H01Z-1ikbwOw463Un2bFZHenx1g/9xJmWhztwEq5swwFUFgmqk4JTPk\"",
  "discoveryVersion": "v1",
  "id": "usermessaging:v1",
  "name": "usermessaging",
@@ -13,10 +13,10 @@
   "x32": "http://www.google.com/images/icons/product/search-32.gif"
  },
  "protocol": "rest",
- "baseUrl": "https://academic-pillar-124918.appspot.com/_ah/api/usermessaging/v1/sendMessage/",
- "basePath": "/_ah/api/usermessaging/v1/sendMessage/",
+ "baseUrl": "https://academic-pillar-124918.appspot.com/_ah/api/usermessaging/v1/",
+ "basePath": "/_ah/api/usermessaging/v1/",
  "rootUrl": "https://academic-pillar-124918.appspot.com/_ah/api/",
- "servicePath": "usermessaging/v1/sendMessage/",
+ "servicePath": "usermessaging/v1/",
  "batchPath": "batch",
  "parameters": {
   "alt": {
@@ -72,34 +72,38 @@
    }
   }
  },
- "resources": {
-  "userMessagingEndpoint": {
-   "methods": {
-    "sendMessage": {
-     "id": "usermessaging.userMessagingEndpoint.sendMessage",
-     "path": "{message}/{phone}",
-     "httpMethod": "POST",
-     "parameters": {
-      "message": {
-       "type": "string",
-       "required": true,
-       "location": "path"
-      },
-      "phone": {
-       "type": "string",
-       "required": true,
-       "location": "path"
-      }
-     },
-     "parameterOrder": [
-      "message",
-      "phone"
-     ],
-     "scopes": [
-      "https://www.googleapis.com/auth/userinfo.email"
-     ]
+ "schemas": {
+  "MessageRecord": {
+   "id": "MessageRecord",
+   "type": "object",
+   "properties": {
+    "fromPhone": {
+     "type": "string"
+    },
+    "textMessage": {
+     "type": "string"
+    },
+    "toPhone": {
+     "type": "string"
     }
    }
+  }
+ },
+ "methods": {
+  "message": {
+   "id": "usermessaging.message",
+   "path": "messageUser",
+   "httpMethod": "POST",
+   "request": {
+    "$ref": "MessageRecord",
+    "parameterName": "resource"
+   },
+   "response": {
+    "$ref": "MessageRecord"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
   }
  }
 }

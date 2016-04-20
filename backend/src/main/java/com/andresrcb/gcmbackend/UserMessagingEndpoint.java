@@ -7,7 +7,12 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 
+import org.json.simple.JSONObject;
+
+import java.net.HttpURLConnection;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.logging.Logger;
 
 import javax.inject.Named;
@@ -44,6 +49,20 @@ public class UserMessagingEndpoint {
         Message msg = new Message.Builder().addData("message", textMessage).build();
         Result r = sender.send(msg, toUser.getRegId(), 5);
         log.info("Data sent with id: "+r.getMessageId());
+        return null;
+    }
+    public MessageRecord messageNotification(MessageRecord message) throws IOException{
+        String textMessage = message.getTextMessage();
+        String toPhone = message.getToPhone();
+        String fromPhone = message.getFromPhone();
+        RegistrationRecord toUser = findRecord(toPhone);
+        URL url = new URL("https://gcm-http.googleapis.com/gcm/send");
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("Authorization", "key="+API_KEY);
+        conn.setDoOutput(true);
+        
         return null;
     }
 //    public void sendMessage(@Named("message") String message, @Named("phone") String phone) throws IOException {

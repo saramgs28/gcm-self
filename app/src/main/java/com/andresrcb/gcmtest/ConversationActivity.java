@@ -3,11 +3,23 @@ package com.andresrcb.gcmtest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class ConversationActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -56,8 +68,7 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.button_audio:
-                Intent i = new Intent(this, MainActivity.class);
-                startActivity(i);
+                sendTextMessage();
                 break;
             case R.id.button_picture:
 
@@ -67,5 +78,45 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
                 break;
         }
         //sendChatMessage();
+    }
+    public void sendTextMessage(){
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String toPhone = "";
+        String textMessage = "";
+        String fromPhone = "";
+        final String URL = "https://momentchatv2.appspot.com/_ah/api/usermessaging/v1/messageUser";
+        if (toPhone.isEmpty()|| fromPhone.isEmpty())
+            Toast.makeText(getApplicationContext(), "Please enter the username and password", Toast.LENGTH_LONG).show();
+        else{
+            try{
+                JSONObject reqObject = new JSONObject();
+                reqObject.put("toPhone", toPhone);
+                reqObject.put("textMessage", textMessage);
+                reqObject.put("fromPhone", fromPhone);
+                JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, URL, reqObject,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                try {
+                                    String x = response.getString("username");
+                                    Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    getApplication().startActivity(intent);
+//                                    startService(intent);
+                                } catch (JSONException e) {
+                                    Log.d("Fail", "Fail");
+                                }
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getApplicationContext(),"Error connecting to the server",Toast.LENGTH_LONG).show();
+                    }
+                });
+                queue.add(req);
+            } catch(JSONException e){
+
+            }
+        }
     }
 }
