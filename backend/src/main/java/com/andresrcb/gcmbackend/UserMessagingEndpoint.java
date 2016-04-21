@@ -14,8 +14,14 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.logging.Logger;
-
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import javax.inject.Named;
+import okhttp3.Authenticator;
+import okhttp3.Credentials;
 
 import static com.andresrcb.gcmbackend.OfyService.ofy;
 
@@ -39,7 +45,7 @@ public class UserMessagingEndpoint {
      *
      * @param message The message to send
      */
-    @ApiMethod(name = "message", httpMethod = ApiMethod.HttpMethod.POST)
+
     public MessageRecord messageUser(MessageRecord message) throws IOException{
         String textMessage = message.getTextMessage();
         String toPhone = message.getToPhone();
@@ -51,63 +57,21 @@ public class UserMessagingEndpoint {
         log.info("Data sent with id: "+r.getMessageId());
         return null;
     }
+    @ApiMethod(name = "message", httpMethod = ApiMethod.HttpMethod.POST)
     public MessageRecord messageNotification(MessageRecord message) throws IOException{
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        OkHttpClient client = new OkHttpClient();
         String textMessage = message.getTextMessage();
         String toPhone = message.getToPhone();
         String fromPhone = message.getFromPhone();
         RegistrationRecord toUser = findRecord(toPhone);
-        URL url = new URL("https://gcm-http.googleapis.com/gcm/send");
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/json");
-        conn.setRequestProperty("Authorization", "key="+API_KEY);
-        conn.setDoOutput(true);
-        
+        RegistrationRecord fromUser = findRecord(fromPhone);
+        String dataBody = "{'notification':{'body':"+textMessage+", 'title': New message from "+fromUser.getUsername()+" }, 'to':"+toUser.getRegId()+"}";
+        RequestBody reqBody = RequestBody.create(JSON, dataBody);
+        Request req = new Request.Builder().url("https://gcm-http.googleapis.com/gcm/send").post(reqBody).addHeader("Authorization", "key="+API_KEY).build();
+        Response response = client.newCall(req).execute();
         return null;
     }
-//    public void sendMessage(@Named("message") String message, @Named("phone") String phone) throws IOException {
-//        if(message == null || message.trim().length() == 0) {
-//            log.warning("Not sending message because it is empty");
-//            return;
-//        }
-//        // crop longer messages
-//        if (message.length() > 1000) {
-//            message = message.substring(0, 1000) + "[...]";
-//        }
-//        Sender sender = new Sender(API_KEY);
-//        Message msg = new Message.Builder().addData("message", message).build();
-//        //List<RegistrationRecord> records = ofy().load().type(RegistrationRecord.class).limit(10).list();
-////        String receiverId = "5512148288";
-//
-//
-//        RegistrationRecord result = findRecord(phone);
-//        Result r = sender.send(msg, result.getRegId(), 5);
-//        log.info("Data sent with id: "+r.getMessageId());
-//        /*for(RegistrationRecord record : records) {
-//            Result result = sender.send(msg, record.getRegId(), 5);
-//            if (result.getMessageId() != null) {
-//                log.info("Message sent to " + record.getRegId());
-//                String canonicalRegId = result.getCanonicalRegistrationId();
-//                if (canonicalRegId != null) {
-//                    // if the regId changed, we have to update the datastore
-//                    log.info("Registration Id changed for " + record.getRegId() + " updating to " + canonicalRegId);
-//                    record.setRegId(canonicalRegId);
-//                    ofy().save().entity(record).now();
-//                }
-//            } else {
-//                String error = result.getErrorCodeName();
-//                if (error.equals(Constants.ERROR_NOT_REGISTERED)) {
-//                    log.warning("Registration Id " + record.getRegId() + " no longer registered with GCM, removing from datastore");
-//                    // if the device is no longer registered with Gcm, remove it from the datastore
-//                    ofy().delete().entity(record).now();
-//                }
-//                else {
-//                    log.warning("Error when sending message : " + error);
-//                }
-//            }
-//        }*/
-//
-//    }
     private RegistrationRecord findRecord(String phone) {
         return ofy().load().type(RegistrationRecord.class).filter("phone", phone).first().now();
     }
