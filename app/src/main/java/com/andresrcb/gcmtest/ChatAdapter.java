@@ -33,17 +33,13 @@ public class ChatAdapter extends ArrayAdapter<ChatMessage> {
         return this.chatMessageList.size();
     }
 
-    /*public ChatMessage getItem(int index) {
-        return this.chatMessageList.get(index);
-    }*/
-
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.fragment_chat_singlemessage, parent, false);
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.fragment_chat_singlemessage_left, parent, false);
         }
         singleMessageContainer = (LinearLayout) convertView.findViewById(R.id.singleMessageContainer);
         ChatMessage chatMessageObj = getItem(position);
-        chatText = (TextView) convertView.findViewById(R.id.singleMessage);
+        chatText = (TextView) convertView.findViewById(R.id.singleMessage_left);
         chatText.setText(chatMessageObj.message);
         chatText.setBackgroundResource(chatMessageObj.left ? R.drawable.receivertosender_audio : R.drawable.sendertoreceiver_audio);
         singleMessageContainer.setGravity(chatMessageObj.left ? Gravity.LEFT : Gravity.RIGHT);

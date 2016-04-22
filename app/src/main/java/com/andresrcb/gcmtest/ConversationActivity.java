@@ -1,35 +1,20 @@
 package com.andresrcb.gcmtest;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class ConversationActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ChatAdapter chatAdapter;
     private ListView listView;
-    private EditText chatText;
-
     private Button buttonSendAudio;
     private Button buttonSendVideo;
     private Button buttonSendPicture;
+    private boolean side = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,9 +29,8 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
         buttonSendVideo.setOnClickListener(this);
         buttonSendPicture.setOnClickListener(this);
 
-
         listView = (ListView) findViewById(R.id.list_messages);
-        chatAdapter = new ChatAdapter(this, R.layout.fragment_chat_singlemessage);
+        chatAdapter = new ChatAdapter(this, R.layout.fragment_chat_singlemessage_left);
         listView.setAdapter(chatAdapter);
 
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
@@ -61,15 +45,16 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
             }
         });*/
     }
-    private boolean sendChatMessage(){
+    /*private boolean sendChatMessage(){
         return true;
-    }
+    }*/
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.button_audio:
-                sendTextMessage();
-                break;
+                chatAdapter.add(new ChatMessage(side, "PRUEBA SID"));
+                side = !side;
+            break;
             case R.id.button_picture:
 
                 break;
@@ -79,7 +64,7 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
         }
         //sendChatMessage();
     }
-    public void sendTextMessage(){
+   /* public void sendTextMessage(){
         RequestQueue queue = Volley.newRequestQueue(this);
         String toPhone = "";
         String textMessage = "";
@@ -118,5 +103,5 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
 
             }
         }
-    }
+    }*/
 }
