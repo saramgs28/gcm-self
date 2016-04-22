@@ -1,10 +1,15 @@
 package com.andresrcb.gcmtest;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 public class ConversationActivity extends AppCompatActivity implements View.OnClickListener {
@@ -15,6 +20,13 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
     private Button buttonSendVideo;
     private Button buttonSendPicture;
     private boolean side = false;
+    private String fileType;
+
+    //IMAGE
+    private static Intent i;
+    final static int cons = 0;
+    private static Bitmap bmp;
+    private static ImageView img;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,17 +64,47 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.button_audio:
-                chatAdapter.add(new ChatMessage(side, "PRUEBA SID"));
+                fileType="audio";
+                sendAudio();
+                chatAdapter.add(new ChatMessage(side, "AUDIO", fileType));
                 side = !side;
             break;
             case R.id.button_picture:
-
+                fileType="picture";
+                sendPicture();
+                chatAdapter.add(new ChatMessage(side, "PICTURE",fileType));
+                side = !side;
                 break;
             case R.id.button_video:
-
+                fileType="video";
+                chatAdapter.add(new ChatMessage(side, "VIDEO",fileType));
+                side = !side;
                 break;
         }
         //sendChatMessage();
+    }
+    public void sendPicture()
+    {
+        //DEBO RETURN PICTURE
+        i= new Intent(MediaStore.ACTION_IMAGE_CAPTURE); //Open camera
+        //i= new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        startActivityForResult(i, cons);//para recibir datos de esta actividad
+    }
+    //UNA SOLA IMAGEN
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data); //No alterar lo que esta escrito. Si no lo pongo, no hace el contenido
+        //ArrayList<Object> listImage = null;
+        if (resultCode == Activity.RESULT_OK) {
+            Bundle ext = data.getExtras();
+            bmp =(Bitmap)ext.get("data"); //Keep the image information in a bitmap
+            //img.setImageBitmap(bmp);
+        }
+    }
+
+    public void sendAudio()
+    {
+
     }
    /* public void sendTextMessage(){
         RequestQueue queue = Volley.newRequestQueue(this);

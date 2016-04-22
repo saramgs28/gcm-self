@@ -1,8 +1,6 @@
 package com.andresrcb.gcmtest;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +16,7 @@ public class ChatAdapter extends ArrayAdapter<ChatMessage> {
     private TextView chatText;
     private List chatMessageList = new ArrayList();
     private LinearLayout singleMessageContainer;
+    private String filetype;
 
     @Override
     public void add(ChatMessage object) {
@@ -41,14 +40,28 @@ public class ChatAdapter extends ArrayAdapter<ChatMessage> {
         ChatMessage chatMessageObj = getItem(position);
         chatText = (TextView) convertView.findViewById(R.id.singleMessage_left);
         chatText.setText(chatMessageObj.message);
-        chatText.setBackgroundResource(chatMessageObj.left ? R.drawable.receivertosender_audio : R.drawable.sendertoreceiver_audio);
+        filetype=chatMessageObj.getFileType();
+        if(filetype=="audio")
+        {
+            //chatText.setBackgroundResource(chatMessageObj.left ? R.drawable.receivertosender_audio : R.drawable.sendertoreceiver_audio);
+            chatText.setBackgroundResource(R.drawable.sendertoreceiver_audio);
+
+        }else if(filetype=="picture")
+        {
+            //chatText.setBackgroundResource(chatMessageObj.left ? R.drawable.receivertosender_picture : R.drawable.sendertoreceiver_picture);
+            chatText.setBackgroundResource(R.drawable.sendertoreceiver_picture);
+
+        }else{
+            //chatText.setBackgroundResource(chatMessageObj.left ? R.drawable.receivertosender_video : R.drawable.sendertoreceiver_video);
+            chatText.setBackgroundResource(R.drawable.sendertoreceiver_video);
+        }
         singleMessageContainer.setGravity(chatMessageObj.left ? Gravity.LEFT : Gravity.RIGHT);
         return convertView;
     }
 
-    public Bitmap decodeToBitmap(byte[] decodedByte) {
+    /*public Bitmap decodeToBitmap(byte[] decodedByte) {
         return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
-    }
+    }*/
 }
 
 
