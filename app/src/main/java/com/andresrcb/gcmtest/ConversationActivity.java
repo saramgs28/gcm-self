@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -44,6 +45,9 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
     private int output_formats[] = { MediaRecorder.OutputFormat.MPEG_4,             MediaRecorder.OutputFormat.THREE_GPP };
     private String file_exts[] = { AUDIO_RECORDER_FILE_EXT_MP4, AUDIO_RECORDER_FILE_EXT_3GP };
 
+    //VIDEO
+    static final int REQUEST_VIDEO_CAPTURE = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,8 +58,8 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
         buttonSendPicture = (Button) findViewById(R.id.button_picture);
 
         //buttonSendAudio.setOnClickListener(this);
-        //buttonSendVideo.setOnClickListener(this);
-        //buttonSendPicture.setOnClickListener(this);
+        buttonSendVideo.setOnClickListener(this);
+        buttonSendPicture.setOnClickListener(this);
 
         listView = (ListView) findViewById(R.id.list_messages);
         chatAdapter = new ChatAdapter(this, R.layout.fragment_chat_singlemessage_left);
@@ -68,7 +72,7 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
         buttonSendAudio.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                switch(event.getAction()){
+                switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         startRecording();
                         break;
@@ -146,7 +150,8 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
                 break;
             case R.id.button_video:
                 fileType="video";
-                chatAdapter.add(new ChatMessage(side, "VIDEO",fileType));
+                recordVideo();
+                //chatAdapter.add(new ChatMessage(side, "VIDEO",fileType));
                 side = !side;
                 break;
         }
@@ -164,13 +169,49 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data); //No alterar lo que esta escrito. Si no lo pongo, no hace el contenido
-        //ArrayList<Object> listImage = null;
+        super.onActivityResult(requestCode, resultCode, data);
+
+        //IMAGE
         if (resultCode == Activity.RESULT_OK) {
             Bundle ext = data.getExtras();
             bmp =(Bitmap)ext.get("data"); //Keep the image information in a bitmap
             //img.setImageBitmap(bmp);
         }
+        //VIDEO
+        if (requestCode == REQUEST_VIDEO_CAPTURE) {
+            if (resultCode == RESULT_OK) {
+                Bundle bundle = data.getExtras();
+                Toast.makeText(this, "Video saved to:\n" +
+                        data.getData(), Toast.LENGTH_LONG).show();
+            } else if (resultCode == RESULT_CANCELED) {
+                Toast.makeText(this, "Video recording cancelled.",
+                        Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, "Failed to record video",
+                        Toast.LENGTH_LONG).show();
+            }
+        }
+        if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == RESULT_OK) {
+            chatAdapter.add(new ChatMessage(side, "VIDEO",fileType));
+        }
+    }
+
+    //VIDEO
+    public void recordVideo()
+    {
+        //specifies that the video should be stored on the SD card in a file named myvideo.mp4
+        File mediaFile =
+                new File(Environment.getExternalStorageDirectory().getAbsolutePath()
+                        + "/myvideo.mp4");
+
+        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(intent, REQUEST_VIDEO_CAPTURE);
+        }
+        Uri videoUri = Uri.fromFile(mediaFile);
+
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
+        startActivityForResult(intent, REQUEST_VIDEO_CAPTURE);
     }
 
    /* public void sendTextMessage(){
