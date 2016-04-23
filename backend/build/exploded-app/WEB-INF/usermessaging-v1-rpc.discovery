@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"H01Z-1ikbwOw463Un2bFZHenx1g/9xJmWhztwEq5swwFUFgmqk4JTPk\"",
+ "etag": "\"H01Z-1ikbwOw463Un2bFZHenx1g/7WeUXZSQHfhM3XD_yJIKp13X_pY\"",
  "discoveryVersion": "v1",
  "id": "usermessaging:v1",
  "name": "usermessaging",
@@ -90,6 +90,23 @@
  "methods": {
   "usermessaging.message": {
    "id": "usermessaging.message",
+   "parameters": {
+    "resource": {
+     "$ref": "MessageRecord"
+    }
+   },
+   "parameterOrder": [
+    "resource"
+   ],
+   "returns": {
+    "$ref": "MessageRecord"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "usermessaging.userMessagingEndpoint.messageUser": {
+   "id": "usermessaging.userMessagingEndpoint.messageUser",
    "parameters": {
     "resource": {
      "$ref": "MessageRecord"

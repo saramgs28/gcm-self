@@ -70,6 +70,7 @@ public class UserMessagingEndpoint {
         RequestBody reqBody = RequestBody.create(JSON, dataBody);
         Request req = new Request.Builder().url("https://gcm-http.googleapis.com/gcm/send").post(reqBody).addHeader("Authorization", "key="+API_KEY).build();
         Response response = client.newCall(req).execute();
+        String res = response.body().string();
         return null;
     }
     private RegistrationRecord findRecord(String phone) {

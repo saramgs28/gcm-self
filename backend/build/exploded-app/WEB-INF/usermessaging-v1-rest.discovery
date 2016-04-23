@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "\"H01Z-1ikbwOw463Un2bFZHenx1g/9xJmWhztwEq5swwFUFgmqk4JTPk\"",
+ "etag": "\"H01Z-1ikbwOw463Un2bFZHenx1g/7WeUXZSQHfhM3XD_yJIKp13X_pY\"",
  "discoveryVersion": "v1",
  "id": "usermessaging:v1",
  "name": "usermessaging",
@@ -92,7 +92,7 @@
  "methods": {
   "message": {
    "id": "usermessaging.message",
-   "path": "messageUser",
+   "path": "messageNotification",
    "httpMethod": "POST",
    "request": {
     "$ref": "MessageRecord",
@@ -104,6 +104,27 @@
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
    ]
+  }
+ },
+ "resources": {
+  "userMessagingEndpoint": {
+   "methods": {
+    "messageUser": {
+     "id": "usermessaging.userMessagingEndpoint.messageUser",
+     "path": "messageUser",
+     "httpMethod": "POST",
+     "request": {
+      "$ref": "MessageRecord",
+      "parameterName": "resource"
+     },
+     "response": {
+      "$ref": "MessageRecord"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/userinfo.email"
+     ]
+    }
+   }
   }
  }
 }
