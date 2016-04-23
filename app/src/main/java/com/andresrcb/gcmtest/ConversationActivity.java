@@ -1,5 +1,6 @@
 package com.andresrcb.gcmtest;
 
+import android.*;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -47,6 +48,9 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
 
     //VIDEO
     static final int REQUEST_VIDEO_CAPTURE = 1;
+    private String selectedImagePath = "";
+    private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
+    private static final int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 200;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +106,7 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
         }
         return (file.getAbsolutePath() + "/" + System.currentTimeMillis() + file_exts[currentFormat]);
     }
-    private void startRecording(){
+    private void startRecording() {
         if( recorder == null ) {
             recorder = new MediaRecorder();
             recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -150,8 +154,9 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
                 break;
             case R.id.button_video:
                 fileType="video";
+//                int hasVideoPermission = checkSelfPermission(android.Manifest.permission.)
                 recordVideo();
-                //chatAdapter.add(new ChatMessage(side, "VIDEO",fileType));
+                chatAdapter.add(new ChatMessage(side, "VIDEO",fileType));
                 side = !side;
                 break;
         }
@@ -172,27 +177,31 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
         super.onActivityResult(requestCode, resultCode, data);
 
         //IMAGE
-        if (resultCode == Activity.RESULT_OK) {
-            Bundle ext = data.getExtras();
-            bmp =(Bitmap)ext.get("data"); //Keep the image information in a bitmap
-            //img.setImageBitmap(bmp);
+        if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                // Image captured and saved to fileUri specified in the Intent
+                Toast.makeText(this, "Image saved to:\n" +
+                        data.getData(), Toast.LENGTH_LONG).show();
+                Bundle ext = data.getExtras();
+                bmp =(Bitmap)ext.get("data"); //Keep the image information in a bitmap
+                img.setImageBitmap(bmp);
+            } else if (resultCode == RESULT_CANCELED) {
+                // User cancelled the image capture
+            } else {
+                // Image capture failed, advise user
+            }
         }
         //VIDEO
-        if (requestCode == REQUEST_VIDEO_CAPTURE) {
+        if (requestCode == CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                Bundle bundle = data.getExtras();
+                // Video captured and saved to fileUri specified in the Intent
                 Toast.makeText(this, "Video saved to:\n" +
                         data.getData(), Toast.LENGTH_LONG).show();
             } else if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(this, "Video recording cancelled.",
-                        Toast.LENGTH_LONG).show();
+                // User cancelled the video capture
             } else {
-                Toast.makeText(this, "Failed to record video",
-                        Toast.LENGTH_LONG).show();
+                // Video capture failed, advise user
             }
-        }
-        if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == RESULT_OK) {
-            chatAdapter.add(new ChatMessage(side, "VIDEO",fileType));
         }
     }
 
@@ -210,8 +219,8 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
         }
         Uri videoUri = Uri.fromFile(mediaFile);
 
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
-        startActivityForResult(intent, REQUEST_VIDEO_CAPTURE);
+//        intent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
+//        startActivityForResult(intent, REQUEST_VIDEO_CAPTURE);
     }
 
    /* public void sendTextMessage(){
