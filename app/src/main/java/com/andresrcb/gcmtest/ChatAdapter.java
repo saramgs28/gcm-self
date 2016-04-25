@@ -43,17 +43,14 @@ public class ChatAdapter extends ArrayAdapter<ChatMessage> {
         filetype=chatMessageObj.getFileType();
         if(filetype=="audio")
         {
-            //chatText.setBackgroundResource(chatMessageObj.left ? R.drawable.receivertosender_audio : R.drawable.sendertoreceiver_audio);
-            chatText.setBackgroundResource(R.drawable.sendertoreceiver_audio);
+            chatText.setBackgroundResource(R.drawable.audio);
 
         }else if(filetype=="picture")
         {
-            //chatText.setBackgroundResource(chatMessageObj.left ? R.drawable.receivertosender_picture : R.drawable.sendertoreceiver_picture);
-            chatText.setBackgroundResource(R.drawable.sendertoreceiver_picture);
+            chatText.setBackgroundResource(R.drawable.picture);
 
         }else{
-            //chatText.setBackgroundResource(chatMessageObj.left ? R.drawable.receivertosender_video : R.drawable.sendertoreceiver_video);
-            chatText.setBackgroundResource(R.drawable.sendertoreceiver_video);
+            chatText.setBackgroundResource(R.drawable.video);
         }
         singleMessageContainer.setGravity(chatMessageObj.left ? Gravity.LEFT : Gravity.RIGHT);
         return convertView;
