@@ -1,6 +1,5 @@
 package com.andresrcb.gcmtest;
 
-import android.*;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -9,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,7 +16,6 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -26,8 +25,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-
-import com.google.apphosting.client.serviceapp.RpcHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,10 +50,14 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
     private static ImageView img;
 
     //AUDIO
+    private static String mFileName = null;
+    private MediaPlayer mplayer = null;
+    private static final String LOG_TAG = "AudioRecordTest";
+
     private static final String AUDIO_RECORDER_FILE_EXT_3GP = ".3gp";
     private static final String AUDIO_RECORDER_FILE_EXT_MP4 = ".mp4";
     private static final String AUDIO_RECORDER_FOLDER = "AudioRecorder";
-    private MediaRecorder recorder = null;
+    private MediaRecorder recorder;
     private int currentFormat = 0;
     private int output_formats[] = { MediaRecorder.OutputFormat.MPEG_4,             MediaRecorder.OutputFormat.THREE_GPP };
     private String file_exts[] = { AUDIO_RECORDER_FILE_EXT_MP4, AUDIO_RECORDER_FILE_EXT_3GP };
@@ -94,12 +95,15 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
         buttonSendAudio.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                recorder = new MediaRecorder();
+
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        startRecording();
+                        recorder = startRecording();
                         break;
                     case MotionEvent.ACTION_UP:
-                        stopRecording();
+                        if(recorder != null)
+                            stopRecording(recorder);
                         break;
                 }
                 return false;
@@ -118,34 +122,42 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
     private String getFilename(){
         String filepath = Environment.getExternalStorageDirectory().getPath();
         File file = new File(filepath,AUDIO_RECORDER_FOLDER);
-
         if(!file.exists()){
+            Toast.makeText(this, "NO EXISTE", Toast.LENGTH_LONG).show();
             file.mkdirs();
         }
         return (file.getAbsolutePath() + "/" + System.currentTimeMillis() + file_exts[currentFormat]);
     }
-    private void startRecording() {
+    private MediaRecorder startRecording() {
+        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
+        mFileName += "/audiorecordtest.3gp";
         if(checkAudioPermission()){
             if( recorder == null ) {
-                recorder = new MediaRecorder();
                 recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
                 recorder.setOutputFormat(output_formats[currentFormat]);
                 recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-                recorder.setOutputFile(getFilename());
+                //recorder.setOutputFile(getFilename());
+                recorder.setOutputFile(mFileName);
             }
             try {
                 recorder.prepare();
                 recorder.start();
+                Toast.makeText(this, "GRABANDO", Toast.LENGTH_LONG).show();
             } catch (IllegalStateException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            return recorder;
         }else{
             requestAudioPermission();
+            return null;
         }
     }
-    private void stopRecording(){
+
+    private void stopRecording(MediaRecorder recorder){
+        Toast.makeText(this, "STOP RECORDING", Toast.LENGTH_LONG).show();
+
         if(null != recorder){
             recorder.stop();
             recorder.reset();
@@ -153,7 +165,6 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
             Toast.makeText(this, "SE HA GRABADO", Toast.LENGTH_LONG).show();
             chatAdapter.add(new ChatMessage(side, "AUDIO", fileType));
             side = !side;
-            recorder = null;
         }
     }
     /*private boolean sendChatMessage(){
@@ -172,16 +183,16 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
 //                chatAdapter.add(new ChatMessage(side, "AUDIO", fileType));
 //                side = !side;
 //            break;
-//            case R.id.button_picture:
-//                fileType="picture";
-//                if(checkCamPermission()){
-//                    takePicture();
-//                    chatAdapter.add(new ChatMessage(side, "PICTURE", fileType));
-//                }else {
-//                    requestCamPermission();
-//                }
-//                side = !side;
-//                break;
+            case R.id.button_picture:
+                fileType="picture";
+                if(checkCamPermission()){
+                    takePicture();
+                    chatAdapter.add(new ChatMessage(side, "PICTURE", fileType));
+                }else {
+                    requestCamPermission();
+                }
+                side = !side;
+                break;
             case R.id.button_video:
                 fileType="video";
                 if(checkCamPermission()){
@@ -249,7 +260,7 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage("We need Camera");
+                builder.setMessage("MomentChat requires camera");
                 builder.setTitle("Camera");
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
@@ -275,8 +286,8 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECORD_AUDIO)) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage("We need Camera");
-                builder.setTitle("Camera");
+                builder.setMessage("MomentChat requires audio");
+                builder.setTitle("Audio");
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
