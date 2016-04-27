@@ -3,7 +3,9 @@ package com.andresrcb.gcmtest;
 import android.*;
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -123,7 +125,7 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
         return (file.getAbsolutePath() + "/" + System.currentTimeMillis() + file_exts[currentFormat]);
     }
     private void startRecording() {
-        if(checkPermission("audio")){
+        if(checkAudioPermission()){
             if( recorder == null ) {
                 recorder = new MediaRecorder();
                 recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -140,7 +142,7 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
                 e.printStackTrace();
             }
         }else{
-            requestPermission("audio");
+            requestAudioPermission();
         }
     }
     private void stopRecording(){
@@ -170,25 +172,23 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
 //                chatAdapter.add(new ChatMessage(side, "AUDIO", fileType));
 //                side = !side;
 //            break;
-            case R.id.button_picture:
-                fileType="picture";
-                if(checkPermission("picture")){
-                    takePicture();
-                    chatAdapter.add(new ChatMessage(side, "PICTURE", fileType));
-                }else{
-                    requestPermission("picture");
-                }
-
-                side = !side;
-                break;
+//            case R.id.button_picture:
+//                fileType="picture";
+//                if(checkCamPermission()){
+//                    takePicture();
+//                    chatAdapter.add(new ChatMessage(side, "PICTURE", fileType));
+//                }else {
+//                    requestCamPermission();
+//                }
+//                side = !side;
+//                break;
             case R.id.button_video:
                 fileType="video";
-//                int hasVideoPermission = checkSelfPermission(android.Manifest.permission.)
-                if(checkPermission("video")){
+                if(checkCamPermission()){
                     recordVideo();
                     chatAdapter.add(new ChatMessage(side, "VIDEO", fileType));
                 }else{
-                    requestPermission("video");
+                    requestCamPermission();
                 }
                 side = !side;
                 break;
@@ -237,56 +237,58 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
             }
         }
     }
-    //VIDEO
-    private boolean checkPermission(String type){
-        String permission = "";
-        if(type == "video"){
-            permission = Manifest.permission.CAMERA;
-        }else if(type == "picture"){
-            permission = Manifest.permission.CAMERA;
-        }else if(type == "audio"){
-            permission = Manifest.permission.RECORD_AUDIO;
-        }
-        int result = ContextCompat.checkSelfPermission(this, permission);
-        if (result == PackageManager.PERMISSION_GRANTED){
-
-            return true;
-
-        } else {
-
+    private boolean checkCamPermission(){
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             return false;
-
+        }else{
+            return true;
         }
     }
-    private void requestPermission(String type){
-        String permission = "";
-        String requestText = "";
-        mRoot = (RelativeLayout) findViewById(R.id.conversation_layout);
-        if(type.equals("video")){
-            permission = Manifest.permission.CAMERA;
-            requestText = "Need Camera Permission";
-        }else if(type.equals("picture")){
-            permission = Manifest.permission.CAMERA;
-            requestText = "Need Camera Permission";
-        }else if(type.equals("audio")){
-            permission = Manifest.permission.RECORD_AUDIO;
-            requestText = "Need Audio Permission";
-        }
-
-        if(ActivityCompat.shouldShowRequestPermissionRationale(this, permission)){
-            Snackbar.make(mRoot, requestText, Snackbar.LENGTH_INDEFINITE).setAction("Ok",
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CODE);
-                        }
-                    });
-        }else {
-            Snackbar.make(mRoot, "Permission is not available. Requesting camera permission.", Snackbar.LENGTH_SHORT).show();
-            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CODE);
+    private void requestCamPermission(){
+        final String[] permissions = new String[]{Manifest.permission.CAMERA};
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("We need Camera");
+                builder.setTitle("Camera");
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ActivityCompat.requestPermissions(activity, permissions, 0);
+                    }
+                });
+                builder.show();
+            } else {
+                ActivityCompat.requestPermissions(this, permissions, 0);
+            }
         }
     }
-
+    private boolean checkAudioPermission(){
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            return false;
+        }else{
+            return true;
+        }
+    }
+    private void requestAudioPermission(){
+        final String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO};
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECORD_AUDIO)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("We need Camera");
+                builder.setTitle("Camera");
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ActivityCompat.requestPermissions(activity, permissions, 0);
+                    }
+                });
+                builder.show();
+            } else {
+                ActivityCompat.requestPermissions(this, permissions, 0);
+            }
+        }
+    }
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
@@ -301,20 +303,15 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
     }
     public void recordVideo()
     {
-
         //specifies that the video should be stored on the SD card in a file named myvideo.mp4
         File mediaFile =
                 new File(Environment.getExternalStorageDirectory().getAbsolutePath()
                         + "/myvideo.mp4");
-
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(intent, REQUEST_VIDEO_CAPTURE);
         }
         Uri videoUri = Uri.fromFile(mediaFile);
-
-//        intent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
-//        startActivityForResult(intent, REQUEST_VIDEO_CAPTURE);
     }
 
    /* public void sendTextMessage(){
