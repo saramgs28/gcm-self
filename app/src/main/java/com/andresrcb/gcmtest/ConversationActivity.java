@@ -121,25 +121,29 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
         return (file.getAbsolutePath() + "/" + System.currentTimeMillis() + file_exts[currentFormat]);
     }
     private void startRecording() {
-        if(checkAudioPermission()){
-            if( recorder == null ) {
-                recorder=new MediaRecorder();
-                recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-                recorder.setOutputFormat(output_formats[currentFormat]);
-                recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-                recorder.setOutputFile(getFilename());
-            }
-            try {
-                recorder.prepare();
-                recorder.start();
-                Toast.makeText(this, "GRABANDO", Toast.LENGTH_LONG).show();
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+        if(checkStoragePermission()){
+            if(checkAudioPermission()){
+                if( recorder == null ) {
+                    recorder=new MediaRecorder();
+                    recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+                    recorder.setOutputFormat(output_formats[currentFormat]);
+                    recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+                    recorder.setOutputFile(getFilename());
+                }
+                try {
+                    recorder.prepare();
+                    recorder.start();
+                    Toast.makeText(this, "GRABANDO", Toast.LENGTH_LONG).show();
+                } catch (IllegalStateException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }else{
+                requestAudioPermission();
             }
         }else{
-            requestAudioPermission();
+            requestExternalPermission();
         }
     }
 
@@ -150,7 +154,7 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
             recorder.reset();
             recorder.release();
             Toast.makeText(this, "SE HA GRABADO", Toast.LENGTH_LONG).show();
-            chatAdapter.add(new ChatMessage(side, "AUDIO", fileType));
+            chatAdapter.add(new ChatMessage(side, "AUDIO", "audio"));
             side = !side;
         }
     }
@@ -275,6 +279,32 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setMessage("MomentChat requires audio");
                 builder.setTitle("Audio");
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ActivityCompat.requestPermissions(activity, permissions, 0);
+                    }
+                });
+                builder.show();
+            } else {
+                ActivityCompat.requestPermissions(this, permissions, 0);
+            }
+        }
+    }
+    private boolean checkStoragePermission(){
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            return false;
+        }else{
+            return true;
+        }
+    }
+    private void requestExternalPermission(){
+        final String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("MomentChat requires external storage");
+                builder.setTitle("Storage");
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
