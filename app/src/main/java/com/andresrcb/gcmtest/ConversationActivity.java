@@ -123,10 +123,10 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
     private void startRecording() {
         if(checkAudioPermission()){
             if( recorder == null ) {
+                recorder=new MediaRecorder();
                 recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
                 recorder.setOutputFormat(output_formats[currentFormat]);
                 recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-                recorder.setOutputFile(getFilename());
                 recorder.setOutputFile(getFilename());
             }
             try {
