@@ -8,7 +8,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
@@ -50,10 +49,6 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
     private static ImageView img;
 
     //AUDIO
-    private static String mFileName = null;
-    private MediaPlayer mplayer = null;
-    private static final String LOG_TAG = "AudioRecordTest";
-
     private static final String AUDIO_RECORDER_FILE_EXT_3GP = ".3gp";
     private static final String AUDIO_RECORDER_FILE_EXT_MP4 = ".mp4";
     private static final String AUDIO_RECORDER_FOLDER = "AudioRecorder";
@@ -95,15 +90,12 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
         buttonSendAudio.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                recorder = new MediaRecorder();
-
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        recorder = startRecording();
+                        startRecording();
                         break;
                     case MotionEvent.ACTION_UP:
-                        if(recorder != null)
-                            stopRecording(recorder);
+                            stopRecording();
                         break;
                 }
                 return false;
@@ -128,16 +120,14 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
         }
         return (file.getAbsolutePath() + "/" + System.currentTimeMillis() + file_exts[currentFormat]);
     }
-    private MediaRecorder startRecording() {
-        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-        mFileName += "/audiorecordtest.3gp";
+    private void startRecording() {
         if(checkAudioPermission()){
             if( recorder == null ) {
                 recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
                 recorder.setOutputFormat(output_formats[currentFormat]);
                 recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-                //recorder.setOutputFile(getFilename());
-                recorder.setOutputFile(mFileName);
+                recorder.setOutputFile(getFilename());
+                recorder.setOutputFile(getFilename());
             }
             try {
                 recorder.prepare();
@@ -148,16 +138,13 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return recorder;
         }else{
             requestAudioPermission();
-            return null;
         }
     }
 
-    private void stopRecording(MediaRecorder recorder){
+    private void stopRecording(){
         Toast.makeText(this, "STOP RECORDING", Toast.LENGTH_LONG).show();
-
         if(null != recorder){
             recorder.stop();
             recorder.reset();
