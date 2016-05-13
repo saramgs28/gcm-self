@@ -5,6 +5,7 @@ import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
 import org.json.simple.JSONObject;
 
+
 /** The Objectify object model for device registrations we are persisting */
 @Entity
 public class MessageRecord {
@@ -16,6 +17,8 @@ public class MessageRecord {
     private String toPhone;
     private String fromPhone;
     private String textMessage;
+    @Index
+    private String fileId;
 
     // you can add more fields...
 
@@ -28,6 +31,7 @@ public class MessageRecord {
         return fromPhone;
     }
     public String getTextMessage(){return textMessage;}
+    public String getFileId(){return fileId;}
     public void setToPhone(String p){
         this.toPhone = p;
     }
@@ -37,5 +41,6 @@ public class MessageRecord {
     public void setTextMessage(String m){
         this.textMessage = m;
     }
+    public void setFileId(String f){this.fileId = f;}
 
 }
