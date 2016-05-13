@@ -9,6 +9,7 @@ import com.google.api.server.spi.config.ApiNamespace;
 
 import org.json.simple.JSONObject;
 
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.io.IOException;
 import java.net.URL;
@@ -39,7 +40,7 @@ public class UserMessagingEndpoint {
      *
      * @param message The message to send
      */
-    @ApiMethod(name = "message", httpMethod = ApiMethod.HttpMethod.POST)
+
     public MessageRecord messageUser(MessageRecord message) throws IOException{
         String textMessage = message.getTextMessage();
         String toPhone = message.getToPhone();
@@ -51,18 +52,29 @@ public class UserMessagingEndpoint {
         log.info("Data sent with id: "+r.getMessageId());
         return null;
     }
+    @ApiMethod(name = "message", httpMethod = ApiMethod.HttpMethod.POST)
     public MessageRecord messageNotification(MessageRecord message) throws IOException{
         String textMessage = message.getTextMessage();
         String toPhone = message.getToPhone();
         String fromPhone = message.getFromPhone();
+        String fileUrl = message.getFileUrl();
         RegistrationRecord toUser = findRecord(toPhone);
+        RegistrationRecord fromUser = findRecord(fromPhone);
+        String resp = "{\"to\": "+toUser.getRegId()+ ","+
+                "\"notification\": {" +
+               "\"body: New Message from \"" + fromUser.getName() + ","+
+               "\"title\":" + "New MomentChat Notification" +
+                "}" +
+                "}";
         URL url = new URL("https://gcm-http.googleapis.com/gcm/send");
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
-        conn.setRequestProperty("Authorization", "key="+API_KEY);
+        conn.setRequestProperty("Authorization", "key=" + API_KEY);
+        OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+        wr.write(resp);
+        wr.flush();
         conn.setDoOutput(true);
-        
         return null;
     }
 //    public void sendMessage(@Named("message") String message, @Named("phone") String phone) throws IOException {

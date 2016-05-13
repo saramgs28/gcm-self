@@ -18,7 +18,7 @@ public class MessageRecord {
     private String fromPhone;
     private String textMessage;
     @Index
-    private String fileId;
+    private String fileUrl;
 
     // you can add more fields...
 
@@ -31,7 +31,7 @@ public class MessageRecord {
         return fromPhone;
     }
     public String getTextMessage(){return textMessage;}
-    public String getFileId(){return fileId;}
+    public String getFileUrl(){return fileUrl;}
     public void setToPhone(String p){
         this.toPhone = p;
     }
@@ -41,6 +41,6 @@ public class MessageRecord {
     public void setTextMessage(String m){
         this.textMessage = m;
     }
-    public void setFileId(String f){this.fileId = f;}
+    public void setFileUrl(String f){this.fileUrl = f;}
 
 }

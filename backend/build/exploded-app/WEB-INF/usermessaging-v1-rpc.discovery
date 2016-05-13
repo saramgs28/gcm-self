@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"H01Z-1ikbwOw463Un2bFZHenx1g/OyRHP0aSDM8Zo81Q7L_kpx1F-28\"",
+ "etag": "\"H01Z-1ikbwOw463Un2bFZHenx1g/96qrUuDphVrQKVBt0x863VJQuWE\"",
  "discoveryVersion": "v1",
  "id": "usermessaging:v1",
  "name": "usermessaging",
@@ -75,7 +75,7 @@
    "id": "MessageRecord",
    "type": "object",
    "properties": {
-    "fileId": {
+    "fileUrl": {
      "type": "string"
     },
     "fromPhone": {
@@ -108,8 +108,8 @@
     "https://www.googleapis.com/auth/userinfo.email"
    ]
   },
-  "usermessaging.userMessagingEndpoint.messageNotification": {
-   "id": "usermessaging.userMessagingEndpoint.messageNotification",
+  "usermessaging.userMessagingEndpoint.messageUser": {
+   "id": "usermessaging.userMessagingEndpoint.messageUser",
    "parameters": {
     "resource": {
      "$ref": "MessageRecord"

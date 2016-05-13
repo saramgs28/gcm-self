@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "\"H01Z-1ikbwOw463Un2bFZHenx1g/OyRHP0aSDM8Zo81Q7L_kpx1F-28\"",
+ "etag": "\"H01Z-1ikbwOw463Un2bFZHenx1g/96qrUuDphVrQKVBt0x863VJQuWE\"",
  "discoveryVersion": "v1",
  "id": "usermessaging:v1",
  "name": "usermessaging",
@@ -77,7 +77,7 @@
    "id": "MessageRecord",
    "type": "object",
    "properties": {
-    "fileId": {
+    "fileUrl": {
      "type": "string"
     },
     "fromPhone": {
@@ -95,7 +95,7 @@
  "methods": {
   "message": {
    "id": "usermessaging.message",
-   "path": "messageUser",
+   "path": "messageNotification",
    "httpMethod": "POST",
    "request": {
     "$ref": "MessageRecord",
@@ -112,9 +112,9 @@
  "resources": {
   "userMessagingEndpoint": {
    "methods": {
-    "messageNotification": {
-     "id": "usermessaging.userMessagingEndpoint.messageNotification",
-     "path": "messageNotification",
+    "messageUser": {
+     "id": "usermessaging.userMessagingEndpoint.messageUser",
+     "path": "messageUser",
      "httpMethod": "POST",
      "request": {
       "$ref": "MessageRecord",

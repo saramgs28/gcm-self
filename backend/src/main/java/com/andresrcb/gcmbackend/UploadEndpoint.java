@@ -46,7 +46,7 @@ public class UploadEndpoint extends HttpServlet {
         JSONObject json = new JSONObject();
         json.put("servingUrl", servingUrl);
         json.put("blobKey", blobKey.getKeyString());
-        record.setFileId(blobKey.getKeyString());
+        record.setFileUrl(blobKey.getKeyString());
         record.setFromPhone(fromPhone);
         record.setToPhone(toPhone);
         PrintWriter out = res.getWriter();
