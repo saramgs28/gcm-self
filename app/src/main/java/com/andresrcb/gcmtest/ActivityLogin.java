@@ -57,9 +57,9 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
-        Intent i=new Intent(this, MainActivity.class);
-        startActivity(i);
-        /*if (checkPlayServices()) {
+//        Intent i=new Intent(this, MainActivity.class);
+//        startActivity(i);
+        if (checkPlayServices()) {
             // Start IntentService to register this application with GCM.
             Intent intent = new Intent(this, RegistrationIntentService.class);
             startService(intent);
@@ -69,7 +69,7 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
             phone.setVisibility(View.VISIBLE);
             name.setVisibility(View.VISIBLE);
             Toast.makeText(getApplicationContext(), "TOKEN:" + token, Toast.LENGTH_LONG).show();
-        }*/
+        }
     }
     public static String getName()
     {
