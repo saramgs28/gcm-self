@@ -95,7 +95,7 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
                         startRecording();
                         break;
                     case MotionEvent.ACTION_UP:
-                            stopRecording();
+                        stopRecording();
                         break;
                 }
                 return false;
@@ -164,16 +164,6 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-//            case R.id.button_audio:
-//                fileType="audio";
-//                if(checkPermission()){
-//
-//                }else{
-//                    requestPermission("audio");
-//                }
-//                chatAdapter.add(new ChatMessage(side, "AUDIO", fileType));
-//                side = !side;
-//            break;
             case R.id.button_picture:
                 fileType="picture";
                 if(checkCamPermission()){
@@ -206,7 +196,19 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
         //i= new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         startActivityForResult(i, cons);//para recibir datos de esta actividad
     }
-
+    //VIDEO
+    public void recordVideo()
+    {
+        //specifies that the video should be stored on the SD card in a file named myvideo.mp4
+        File mediaFile =
+                new File(Environment.getExternalStorageDirectory().getAbsolutePath()
+                        + "/myvideo.mp4");
+        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(intent, REQUEST_VIDEO_CAPTURE);
+        }
+        Uri videoUri = Uri.fromFile(mediaFile);
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -328,18 +330,6 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
                 }
                 break;
         }
-    }
-    public void recordVideo()
-    {
-        //specifies that the video should be stored on the SD card in a file named myvideo.mp4
-        File mediaFile =
-                new File(Environment.getExternalStorageDirectory().getAbsolutePath()
-                        + "/myvideo.mp4");
-        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(intent, REQUEST_VIDEO_CAPTURE);
-        }
-        Uri videoUri = Uri.fromFile(mediaFile);
     }
 
    /* public void sendTextMessage(){

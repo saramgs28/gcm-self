@@ -11,7 +11,6 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
-
 public class FragmentChat extends Fragment{
 
     ListView list_conversations;

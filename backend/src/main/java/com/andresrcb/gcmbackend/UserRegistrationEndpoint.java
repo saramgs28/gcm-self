@@ -3,12 +3,9 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.api.server.spi.config.ApiNamespace;
-import com.google.appengine.api.urlfetch.HTTPMethod;
-import org.json.simple.JSONObject;
 
 import java.util.logging.Logger;
 
-import javax.inject.Named;
 import static com.andresrcb.gcmbackend.OfyService.ofy;
 
 @Api(
@@ -21,7 +18,6 @@ import static com.andresrcb.gcmbackend.OfyService.ofy;
         )
 
 )
-
 
 public class UserRegistrationEndpoint {
     private static final Logger log = Logger.getLogger(UserRegistrationEndpoint.class.getName());

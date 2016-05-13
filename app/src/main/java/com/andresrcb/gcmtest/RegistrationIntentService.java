@@ -43,6 +43,7 @@ public class RegistrationIntentService extends IntentService {
             // are local.
             // R.string.gcm_defaultSenderId (the Sender ID) is typically derived from google-services.json.
             // See https://developers.google.com/cloud-messaging/android/start for details on this file.
+
             // [START get_token]
             InstanceID instanceID = InstanceID.getInstance(this);
             token = instanceID.getToken("590942745468",
