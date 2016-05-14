@@ -1,7 +1,6 @@
 package com.andresrcb.gcmtest;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -24,10 +23,6 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
     static EditText phone;
 
     String token;
-    //ProgressBar loadingSpinner;
-
-    SharedPreferences sharedPreferences;
-    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,17 +32,8 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
         login=(Button)findViewById(R.id.button_login);
         login.setOnClickListener(this);
 
-        //loadingSpinner = (ProgressBar) findViewById(R.id.loading_spinner);
-
         name=(EditText)findViewById(R.id.edit_name);
         phone=(EditText)findViewById(R.id.edit_phone);
-
-        //sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        // creating an shared Preference file for the information to be stored
-// first argument is the name of file and second is the mode, 0 is private mode
-        sharedPreferences = getApplicationContext().getSharedPreferences("Reg", 0);
-// get editor to edit in file
-        editor = sharedPreferences.edit();
     }
 
     @Override
@@ -56,18 +42,12 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
 //        startActivity(i);
         if (checkPlayServices()) {
             if(name.getText().length()<=0){
-                Toast.makeText(ActivityLogin.this, "Enter n ame", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ActivityLogin.this, "Enter name", Toast.LENGTH_SHORT).show();
             }
             else if(phone.getText().length()<=0){
                 Toast.makeText(ActivityLogin.this, "Enter phone", Toast.LENGTH_SHORT).show();
             }
             else {
-                // as now we have information in string. Lets stored them with the help of editor
-                editor.putString("Name", name.getText().toString());
-                editor.putString("Phone",phone.getText().toString());
-                editor.commit();}   // commit the values
-
-                //after saving the value, open a new Activity
                 // Start IntentService to register this application with GCM.
                 Intent intent = new Intent(this, RegistrationIntentService.class);
                 startService(intent);
@@ -76,7 +56,8 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
                 login.setVisibility(View.VISIBLE);
                 phone.setVisibility(View.VISIBLE);
                 name.setVisibility(View.VISIBLE);
-                Toast.makeText(getApplicationContext(), "TOKEN:" + token, Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), "TOKEN:" + token, Toast.LENGTH_LONG).show();
+            }
         }
     }
     public static String getName()

@@ -29,6 +29,9 @@ public class RegistrationIntentService extends IntentService {
     private static final String[] TOPICS = {"global"};
     static String token;
 
+    SharedPreferences mSettings;
+    SharedPreferences.Editor editor;
+
     public RegistrationIntentService() {
         super(TAG);
     }
@@ -37,6 +40,9 @@ public class RegistrationIntentService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
+        mSettings = PreferenceManager.getDefaultSharedPreferences(this);
+        // get editor to edit in file
+        editor = mSettings.edit();
         try {
             // [START register_for_gcm]
             // Initially this call goes out to the network to retrieve the token, subsequent calls
@@ -54,7 +60,10 @@ public class RegistrationIntentService extends IntentService {
             // TODO: Implement this method to send any registration to your app's servers.
             sendRegistrationToServer(token);
 
-            //doGcmSendUpstreamMessage(token);
+            // as now we have information in string. Lets stored them with the help of editor
+            editor.putString("Token", token);
+            editor.commit();  // commit the values
+
 
             // Subscribe to topic channels
             //subscribeTopics(token);
@@ -115,7 +124,7 @@ public class RegistrationIntentService extends IntentService {
                                     Intent intent = new Intent(getBaseContext(), MainActivity.class);
                                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                     getApplication().startActivity(intent);
-//                                    startService(intent);
+                                    startService(intent);
                                 } catch (JSONException e) {
                                     Log.d("Fail", "Fail");
                                 }
