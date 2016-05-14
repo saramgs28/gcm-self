@@ -7,18 +7,15 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="com.example.gcm.permission.C2D_MESSAGE" />
-
     <uses-permission android:name="android.permission.VIBRATE" />
-
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_VIDEO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <permission
         android:name="com.example.gcm.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
-
 
     <application
         android:name="android.support.multidex.MultiDexApplication"
@@ -28,7 +25,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ActivityLogin"
+            android:name=".ActivityLauncher"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -51,6 +48,7 @@
         </receiver>
         <!-- [END gcm_receiver] -->
 
+
         <!-- [START gcm_listener] -->
         <service
             android:name=".MyGcmListenerService"
@@ -60,6 +58,7 @@
             </intent-filter>
         </service>
         <!-- [END gcm_listener] -->
+
 
         <!-- [START instanceId_listener] -->
         <service
@@ -82,7 +81,8 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ConversationActivity"></activity>
+        <activity android:name=".ConversationActivity" />
+        <activity android:name=".ActivityLauncher"></activity>
     </application>
 
 </manifest>

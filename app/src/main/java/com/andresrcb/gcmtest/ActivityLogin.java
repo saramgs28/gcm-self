@@ -3,26 +3,15 @@ package com.andresrcb.gcmtest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 
 public class ActivityLogin extends AppCompatActivity implements View.OnClickListener{
@@ -35,9 +24,10 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
     static EditText phone;
 
     String token;
-    ProgressBar loadingSpinner;
+    //ProgressBar loadingSpinner;
 
     SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,12 +37,17 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
         login=(Button)findViewById(R.id.button_login);
         login.setOnClickListener(this);
 
-        loadingSpinner = (ProgressBar) findViewById(R.id.loading_spinner);
+        //loadingSpinner = (ProgressBar) findViewById(R.id.loading_spinner);
 
         name=(EditText)findViewById(R.id.edit_name);
         phone=(EditText)findViewById(R.id.edit_phone);
 
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        //sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        // creating an shared Preference file for the information to be stored
+// first argument is the name of file and second is the mode, 0 is private mode
+        sharedPreferences = getApplicationContext().getSharedPreferences("Reg", 0);
+// get editor to edit in file
+        editor = sharedPreferences.edit();
     }
 
     @Override
@@ -60,15 +55,28 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
 //        Intent i=new Intent(this, MainActivity.class);
 //        startActivity(i);
         if (checkPlayServices()) {
-            // Start IntentService to register this application with GCM.
-            Intent intent = new Intent(this, RegistrationIntentService.class);
-            startService(intent);
-            token = RegistrationIntentService.getToken();
+            if(name.getText().length()<=0){
+                Toast.makeText(ActivityLogin.this, "Enter n ame", Toast.LENGTH_SHORT).show();
+            }
+            else if(phone.getText().length()<=0){
+                Toast.makeText(ActivityLogin.this, "Enter phone", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                // as now we have information in string. Lets stored them with the help of editor
+                editor.putString("Name", name.getText().toString());
+                editor.putString("Phone",phone.getText().toString());
+                editor.commit();}   // commit the values
 
-            login.setVisibility(View.VISIBLE);
-            phone.setVisibility(View.VISIBLE);
-            name.setVisibility(View.VISIBLE);
-            Toast.makeText(getApplicationContext(), "TOKEN:" + token, Toast.LENGTH_LONG).show();
+                //after saving the value, open a new Activity
+                // Start IntentService to register this application with GCM.
+                Intent intent = new Intent(this, RegistrationIntentService.class);
+                startService(intent);
+                token = RegistrationIntentService.getToken();
+
+                login.setVisibility(View.VISIBLE);
+                phone.setVisibility(View.VISIBLE);
+                name.setVisibility(View.VISIBLE);
+                Toast.makeText(getApplicationContext(), "TOKEN:" + token, Toast.LENGTH_LONG).show();
         }
     }
     public static String getName()
@@ -78,41 +86,6 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
     public static String getPhone()
     {
         return phone.getText().toString();
-    }
-    private void registerUser(String token){
-        RequestQueue queue = Volley.newRequestQueue(this);
-        final String URL = "https://momentchatv2.appspot.com/_ah/api/register/v1/registerDevice";
-        if (name.getText().toString().isEmpty() || phone.getText().toString().isEmpty())
-            Toast.makeText(getApplicationContext(), "Please enter the username and password", Toast.LENGTH_LONG).show();
-        else{
-            try{
-                JSONObject reqObject = new JSONObject();
-                String username = name.getText().toString();
-                String phone_number = phone.getText().toString();
-                reqObject.put("username", username);
-                reqObject.put("phone", phone_number);
-                reqObject.put("regId", token);
-                JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, URL, reqObject,
-                        new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                try {
-                                    String x = response.getString("name");
-                                } catch (JSONException e) {
-                                    Log.d("Fail", "Fail");
-                                }
-                            }
-                        }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getApplicationContext(),"Error connecting to the server",Toast.LENGTH_LONG).show();
-                    }
-                });
-                queue.add(req);
-            } catch(JSONException e){
-
-            }
-        }
     }
     /**
      * Check the device to make sure it has the Google Play Services APK. If
