@@ -41,17 +41,17 @@ public class UserMessagingEndpoint {
      * @param message The message to send
      */
 
-    public MessageRecord messageUser(MessageRecord message) throws IOException{
-        String textMessage = message.getTextMessage();
-        String toPhone = message.getToPhone();
-        String fromPhone = message.getFromPhone();
-        RegistrationRecord toUser = findRecord(toPhone);
-        Sender sender = new Sender(API_KEY);
-        Message msg = new Message.Builder().addData("message", textMessage).build();
-        Result r = sender.send(msg, toUser.getRegId(), 5);
-        log.info("Data sent with id: "+r.getMessageId());
-        return null;
-    }
+//    public MessageRecord messageUser(MessageRecord message) throws IOException{
+//        String textMessage = message.getTextMessage();
+//        String toPhone = message.getToPhone();
+//        String fromPhone = message.getFromPhone();
+//        RegistrationRecord toUser = findRecord(toPhone);
+//        Sender sender = new Sender(API_KEY);
+//        Message msg = new Message.Builder().addData("message", textMessage).build();
+//        Result r = sender.send(msg, toUser.getRegId(), 5);
+//        log.info("Data sent with id: "+r.getMessageId());
+//        return null;
+//    }
     @ApiMethod(name = "message", httpMethod = ApiMethod.HttpMethod.POST)
     public MessageRecord messageNotification(MessageRecord message) throws IOException{
         String textMessage = message.getTextMessage();
@@ -64,17 +64,21 @@ public class UserMessagingEndpoint {
                 "\"notification\": {" +
                "\"body: New Message from \"" + fromUser.getName() + ","+
                "\"title\":" + "New MomentChat Notification" +
+                "}," +
+                "\"data\": {" +
+                "\"fileUrl\":"+ fileUrl+
                 "}" +
                 "}";
         URL url = new URL("https://gcm-http.googleapis.com/gcm/send");
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setDoOutput(true);
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
         conn.setRequestProperty("Authorization", "key=" + API_KEY);
         OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
         wr.write(resp);
         wr.flush();
-        conn.setDoOutput(true);
+
         return null;
     }
 //    public void sendMessage(@Named("message") String message, @Named("phone") String phone) throws IOException {

@@ -222,6 +222,13 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
                 Bundle ext = data.getExtras();
                 bmp =(Bitmap)ext.get("data"); //Keep the image information in a bitmap
                 img.setImageBitmap(bmp);
+                DoUpload doUpload = new DoUpload();
+                String uploadUrl = doUpload.getUploadUrl();
+                if(uploadUrl!=null){
+                    File dir = Environment.getExternalStorageDirectory();
+                    File imgFile = new File(dir, data.getData().getPath());
+                    doUpload.sendFile(uploadUrl, imgFile);
+                }
             } else if (resultCode == RESULT_CANCELED) {
                 // User cancelled the image capture
             } else {
@@ -331,45 +338,4 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
                 break;
         }
     }
-
-   /* public void sendTextMessage(){
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String toPhone = "";
-        String textMessage = "";
-        String fromPhone = "";
-        final String URL = "https://momentchatv2.appspot.com/_ah/api/usermessaging/v1/messageUser";
-        if (toPhone.isEmpty()|| fromPhone.isEmpty())
-            Toast.makeText(getApplicationContext(), "Please enter the username and password", Toast.LENGTH_LONG).show();
-        else{
-            try{
-                JSONObject reqObject = new JSONObject();
-                reqObject.put("toPhone", toPhone);
-                reqObject.put("textMessage", textMessage);
-                reqObject.put("fromPhone", fromPhone);
-                JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, URL, reqObject,
-                        new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                try {
-                                    String x = response.getString("username");
-                                    Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    getApplication().startActivity(intent);
-//                                    startService(intent);
-                                } catch (JSONException e) {
-                                    Log.d("Fail", "Fail");
-                                }
-                            }
-                        }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getApplicationContext(),"Error connecting to the server",Toast.LENGTH_LONG).show();
-                    }
-                });
-                queue.add(req);
-            } catch(JSONException e){
-
-            }
-        }
-    }*/
 }
