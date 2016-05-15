@@ -19,6 +19,7 @@ import static com.andresrcb.gcmbackend.OfyService.ofy;
 
 )
 
+//Registration and check if the token or the phone already exist
 public class UserRegistrationEndpoint {
     private static final Logger log = Logger.getLogger(UserRegistrationEndpoint.class.getName());
     @ApiMethod(name = "register", httpMethod = HttpMethod.POST)
