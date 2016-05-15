@@ -1,6 +1,7 @@
 package com.andresrcb.gcmtest;
 
 import android.app.Activity;
+import android.app.Application;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
@@ -14,11 +15,17 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.android.volley.Cache;
+import com.android.volley.Network;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.BasicNetwork;
+import com.android.volley.toolbox.DiskBasedCache;
+import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -43,38 +50,34 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-public class DoUpload extends Activity{
+public class DoUpload extends Application{
     final String twoHyphens = "--";
     final String lineEnd = "\r\n";
     final String boundary = "apiclient-" + System.currentTimeMillis();
     final String mimeType = "multipart/form-data;boundary=" + boundary;
     private byte[] multipartBody;
-
+    RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
     public String getUploadUrl(){
-        RequestQueue queue = Volley.newRequestQueue(this);
+
         final String URL = "http://momentchatupload.appspot.com/get_upload_url";
         final JSONObject uploadUrl = new JSONObject();
-        JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, URL, null,
-                new Response.Listener<JSONObject>()
-                {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try{
-                            uploadUrl.put("response", response.get("response").toString());
-                        }catch (JSONException e){
-                            Log.d("Erorr", e.getMessage());
-                        }
-                    }
-                },
-                new Response.ErrorListener()
-                {
+        StringRequest getRequest = new StringRequest(Request.Method.GET, URL, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try{
+                    uploadUrl.put("response", response);
+                }catch(JSONException e){
+                    Log.d("Error", e.getMessage());
+                }
+            }
+        },
+                new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d("Error.Response", error.getMessage());
+                        // Handle error
                     }
-                }
-        );
-        queue.add(getRequest);
+                });
+        requestQueue.add(getRequest);
         try{
             return uploadUrl.get("response").toString();
         }catch (JSONException e){

@@ -26,6 +26,16 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -216,12 +226,13 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
         }
         Uri videoUri = Uri.fromFile(mediaFile);
     }
-    private void sendForUpload(String path){
-        Log.d("path", path);
-        DoUpload doUpload = new DoUpload();
-        String uploadUrl = doUpload.getUploadUrl();
-        Log.d("url", uploadUrl);
-//        Toast.makeText(this, uploadUrl, Toast.LENGTH_LONG).show();
+//    private void sendForUpload(String path){
+    private void sendForUpload(){
+//        Log.d("path", path);
+        String uploadUrl = getUploadUrl();
+
+        Log.d(GlobalClass.TAG, ""+uploadUrl);
+        Toast.makeText(this, uploadUrl, Toast.LENGTH_LONG).show();
 //        if(uploadUrl!=null){
 //            File dir = Environment.getExternalStorageDirectory();
 //            File imgFile = new File(dir, path);
@@ -233,7 +244,14 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                sendForUpload(file.getPath());
+                if(file!=null){
+                    Log.d("File", file.toString());
+//                    sendForUpload(file.getPath());
+                    sendForUpload();
+                }else{
+                    Toast.makeText(this, "Error in file", Toast.LENGTH_LONG).show();
+                }
+
             } else if (resultCode == RESULT_CANCELED) {
                 // User cancelled the image capture
             } else {
@@ -345,7 +363,7 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
     }
     private static File getOutputMediaFile(){
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "CameraDemo");
+                Environment.DIRECTORY_PICTURES), "MomentChat");
 
         if (!mediaStorageDir.exists()){
             if (!mediaStorageDir.mkdirs()){
@@ -356,5 +374,35 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         return new File(mediaStorageDir.getPath() + File.separator +
                 "IMG_"+ timeStamp + ".jpg");
+    }
+
+    public String getUploadUrl(){
+
+        final String URL = "http://momentchatupload.appspot.com/get_upload_url";
+        final JSONObject uploadUrl = new JSONObject();
+        StringRequest getRequest = new StringRequest(Request.Method.GET, URL, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(GlobalClass.TAG, ""+response);
+                try{
+                    uploadUrl.put("response", response);
+                }catch(JSONException e){
+                    Log.d("Error", e.getMessage());
+                }
+            }
+        },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // Handle error
+                    }
+                });
+        GlobalClass.getInstance().addToRequestQueue(getRequest);
+        try{
+            return uploadUrl.get("response").toString();
+        }catch (JSONException e){
+            Log.d("Erorr", e.getMessage());
+            return null;
+        }
     }
 }
