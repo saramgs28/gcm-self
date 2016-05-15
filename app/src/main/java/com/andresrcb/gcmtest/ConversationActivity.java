@@ -16,6 +16,7 @@ import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AbsListView;
@@ -27,6 +28,8 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class ConversationActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -47,6 +50,8 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
     final static int cons = 0;
     private static Bitmap bmp;
     private static ImageView img;
+    String mCurrentPhotoPath;
+    Uri file;
 
     //AUDIO
     private static final String AUDIO_RECORDER_FILE_EXT_3GP = ".3gp";
@@ -194,7 +199,9 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
         //DEBO RETURN PICTURE
         i= new Intent(MediaStore.ACTION_IMAGE_CAPTURE); //Open camera
         //i= new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-        startActivityForResult(i, cons);//para recibir datos de esta actividad
+        file = Uri.fromFile(getOutputMediaFile());
+        i.putExtra(MediaStore.EXTRA_OUTPUT, file);
+        startActivityForResult(i, 100);
     }
     //VIDEO
     public void recordVideo()
@@ -209,26 +216,24 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
         }
         Uri videoUri = Uri.fromFile(mediaFile);
     }
+    private void sendForUpload(String path){
+        Log.d("path", path);
+        DoUpload doUpload = new DoUpload();
+        String uploadUrl = doUpload.getUploadUrl();
+        Log.d("url", uploadUrl);
+//        Toast.makeText(this, uploadUrl, Toast.LENGTH_LONG).show();
+//        if(uploadUrl!=null){
+//            File dir = Environment.getExternalStorageDirectory();
+//            File imgFile = new File(dir, path);
+//            doUpload.sendFile(uploadUrl, imgFile);
+//        }
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        //IMAGE
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                // Image captured and saved to fileUri specified in the Intent
-                Toast.makeText(this, "Image saved to:\n" +
-                        data.getData(), Toast.LENGTH_LONG).show();
-                Bundle ext = data.getExtras();
-                bmp =(Bitmap)ext.get("data"); //Keep the image information in a bitmap
-                img.setImageBitmap(bmp);
-                DoUpload doUpload = new DoUpload();
-                String uploadUrl = doUpload.getUploadUrl();
-                if(uploadUrl!=null){
-                    File dir = Environment.getExternalStorageDirectory();
-                    File imgFile = new File(dir, data.getData().getPath());
-                    doUpload.sendFile(uploadUrl, imgFile);
-                }
+                sendForUpload(file.getPath());
             } else if (resultCode == RESULT_CANCELED) {
                 // User cancelled the image capture
             } else {
@@ -337,5 +342,19 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
                 }
                 break;
         }
+    }
+    private static File getOutputMediaFile(){
+        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), "CameraDemo");
+
+        if (!mediaStorageDir.exists()){
+            if (!mediaStorageDir.mkdirs()){
+                return null;
+            }
+        }
+
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        return new File(mediaStorageDir.getPath() + File.separator +
+                "IMG_"+ timeStamp + ".jpg");
     }
 }
