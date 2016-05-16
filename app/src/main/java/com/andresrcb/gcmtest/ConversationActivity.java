@@ -26,10 +26,14 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.android.volley.Network;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -226,18 +230,16 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
         }
         Uri videoUri = Uri.fromFile(mediaFile);
     }
-//    private void sendForUpload(String path){
-    private void sendForUpload(){
-//        Log.d("path", path);
-        String uploadUrl = getUploadUrl();
-
-        Log.d(GlobalClass.TAG, ""+uploadUrl);
-        Toast.makeText(this, uploadUrl, Toast.LENGTH_LONG).show();
-//        if(uploadUrl!=null){
-//            File dir = Environment.getExternalStorageDirectory();
-//            File imgFile = new File(dir, path);
-//            doUpload.sendFile(uploadUrl, imgFile);
-//        }
+    private void sendForUpload(String path){
+        getUploadUrl(path);
+    }
+    private void finalUpload(String uploadUrl, String path){
+        DoUpload doUpload = new DoUpload();
+        if(uploadUrl!=null){
+            Log.d(GlobalClass.TAG, "Final upload");
+            File imgFile = new File(path);
+            doUpload.sendFile(uploadUrl, imgFile);
+        }
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -246,8 +248,7 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
             if (resultCode == RESULT_OK) {
                 if(file!=null){
                     Log.d("File", file.toString());
-//                    sendForUpload(file.getPath());
-                    sendForUpload();
+                    sendForUpload(file.getPath());
                 }else{
                     Toast.makeText(this, "Error in file", Toast.LENGTH_LONG).show();
                 }
@@ -375,20 +376,29 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
         return new File(mediaStorageDir.getPath() + File.separator +
                 "IMG_"+ timeStamp + ".jpg");
     }
-
-    public String getUploadUrl(){
-
+    private void handleUploadUrl(String uploadUrl, String path){
+        Log.d(GlobalClass.TAG, "Handling upload");
+        finalUpload(uploadUrl, path);
+    }
+    public String getUploadUrl(String path){
         final String URL = "http://momentchatupload.appspot.com/get_upload_url";
         final JSONObject uploadUrl = new JSONObject();
+        try{
+            uploadUrl.put("path", path);
+        }catch(JSONException e){
+            Log.d(GlobalClass.TAG, e.getMessage());
+        }
         StringRequest getRequest = new StringRequest(Request.Method.GET, URL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.d(GlobalClass.TAG, ""+response);
+                Log.d(GlobalClass.TAG, "Got response: "+response);
+                String paths = "";
                 try{
-                    uploadUrl.put("response", response);
-                }catch(JSONException e){
-                    Log.d("Error", e.getMessage());
+                    paths = uploadUrl.getString("path");
+                }catch (JSONException e){
+                    Log.d(GlobalClass.TAG, "Error in path");
                 }
+                handleUploadUrl(response, paths);
             }
         },
                 new Response.ErrorListener() {
@@ -398,11 +408,31 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
                     }
                 });
         GlobalClass.getInstance().addToRequestQueue(getRequest);
+        return null;
+    }
+    public void sendMessage(String finalUrl, String toPhone, String fromPhone, String textMessage){
+        final String messagingEndpoint = "https://momentchatv2.appspot.com/_ah/api/usermessaging/v1/messageNotification";
+        JSONObject reqObject = new JSONObject();
         try{
-            return uploadUrl.get("response").toString();
-        }catch (JSONException e){
-            Log.d("Erorr", e.getMessage());
-            return null;
+            reqObject.put("fromPhone", "551236738");
+            reqObject.put("toPhone", "551236738");
+            reqObject.put("fileUrl", "http://momentchatupload.appspot.com"+finalUrl);
+            reqObject.put("textMessage", textMessage);
+            JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, messagingEndpoint, reqObject,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            Log.d(GlobalClass.TAG, "Success");
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d(GlobalClass.TAG, "Error!!");
+                }
+            });
+            GlobalClass.getInstance().addToRequestQueue(req);
+        }catch(JSONException e){
+            Log.d(GlobalClass.TAG, "JSON Error");
         }
     }
 }

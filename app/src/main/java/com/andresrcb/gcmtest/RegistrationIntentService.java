@@ -135,7 +135,7 @@ public class RegistrationIntentService extends IntentService {
                         Toast.makeText(getApplicationContext(),"Error connecting to the server",Toast.LENGTH_LONG).show();
                     }
                 });
-                queue.add(req);
+                GlobalClass.getInstance().addToRequestQueue(req);
             } catch(JSONException e){
 
             }

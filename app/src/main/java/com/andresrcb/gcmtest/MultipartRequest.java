@@ -1,6 +1,8 @@
 package com.andresrcb.gcmtest;
 
 
+import android.util.Log;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -46,6 +48,7 @@ class MultipartRequest extends Request<NetworkResponse> {
     @Override
     protected Response<NetworkResponse> parseNetworkResponse(NetworkResponse response) {
         try {
+            Log.d(GlobalClass.TAG, response.toString());
             return Response.success(
                     response,
                     HttpHeaderParser.parseCacheHeaders(response));
@@ -56,6 +59,7 @@ class MultipartRequest extends Request<NetworkResponse> {
 
     @Override
     protected void deliverResponse(NetworkResponse response) {
+        Log.d(GlobalClass.TAG, response.toString());
         mListener.onResponse(response);
     }
 

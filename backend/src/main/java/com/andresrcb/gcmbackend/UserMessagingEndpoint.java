@@ -58,6 +58,11 @@ public class UserMessagingEndpoint {
         String toPhone = message.getToPhone();
         String fromPhone = message.getFromPhone();
         String fileUrl = message.getFileUrl();
+        MessageRecord newMessage = new MessageRecord();
+        newMessage.setFileUrl(fileUrl);
+        newMessage.setFromPhone(fromPhone);
+        newMessage.setToPhone(toPhone);
+        newMessage.setTextMessage(textMessage);
         RegistrationRecord toUser = findRecord(toPhone);
         RegistrationRecord fromUser = findRecord(fromPhone);
         String resp = "{\"to\": "+toUser.getRegId()+ ","+
@@ -78,7 +83,6 @@ public class UserMessagingEndpoint {
         OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
         wr.write(resp);
         wr.flush();
-
         return null;
     }
 //    public void sendMessage(@Named("message") String message, @Named("phone") String phone) throws IOException {

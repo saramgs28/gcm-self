@@ -23,6 +23,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.DiskBasedCache;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
@@ -31,6 +32,7 @@ import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 import com.android.volley.NetworkResponse;
+import com.google.api.client.json.JsonParser;
 import com.google.api.client.util.IOUtils;
 import com.google.appengine.repackaged.com.google.common.io.Files;
 
@@ -56,37 +58,10 @@ public class DoUpload extends Application{
     final String boundary = "apiclient-" + System.currentTimeMillis();
     final String mimeType = "multipart/form-data;boundary=" + boundary;
     private byte[] multipartBody;
-    RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-    public String getUploadUrl(){
 
-        final String URL = "http://momentchatupload.appspot.com/get_upload_url";
-        final JSONObject uploadUrl = new JSONObject();
-        StringRequest getRequest = new StringRequest(Request.Method.GET, URL, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try{
-                    uploadUrl.put("response", response);
-                }catch(JSONException e){
-                    Log.d("Error", e.getMessage());
-                }
-            }
-        },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // Handle error
-                    }
-                });
-        requestQueue.add(getRequest);
-        try{
-            return uploadUrl.get("response").toString();
-        }catch (JSONException e){
-            Log.d("Erorr", e.getMessage());
-            return null;
-        }
-    }
     public void sendFile(String uploadUrl, File file){
-        RequestQueue queue = Volley.newRequestQueue(this);
+        Log.d(GlobalClass.TAG, "File has arrived here");
+        Log.d(GlobalClass.TAG, file.toString());
         byte[] fileData1 = new byte[(int) file.length()];
         FileInputStream fileInputStream;
         try{
@@ -110,19 +85,29 @@ public class DoUpload extends Application{
         MultipartRequest multipartRequest = new MultipartRequest(uploadUrl, null, mimeType, multipartBody, new Response.Listener<NetworkResponse>() {
             @Override
             public void onResponse(NetworkResponse response) {
-                Toast.makeText(getApplicationContext(), "Upload successfully!", Toast.LENGTH_SHORT).show();
+                try{
+                    String json = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+                    JSONObject jsonObject = new JSONObject(json);
+                    String finalUrl = jsonObject.getString("response");
+                    ConversationActivity conversationActivity = new ConversationActivity();
+                    conversationActivity.sendMessage(finalUrl, "", "", "");
+                }catch(Exception e){
+                    Log.d(GlobalClass.TAG, e.getMessage());
+                }
+
+
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(), "Upload failed!\r\n" + error.toString(), Toast.LENGTH_SHORT).show();
+                Log.d(GlobalClass.TAG, "File not uploaded");
             }
         });
-        queue.add(multipartRequest);
+        GlobalClass.getInstance().addToRequestQueue(multipartRequest);
     }
     private void buildPart(DataOutputStream dataOutputStream, byte[] fileData, String fileName) throws IOException {
         dataOutputStream.writeBytes(twoHyphens + boundary + lineEnd);
-        dataOutputStream.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\"; filename=\""
+        dataOutputStream.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\""
                 + fileName + "\"" + lineEnd);
         dataOutputStream.writeBytes(lineEnd);
 
