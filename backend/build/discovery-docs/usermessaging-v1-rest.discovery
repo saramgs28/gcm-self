@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "\"H01Z-1ikbwOw463Un2bFZHenx1g/9JI0NRr72AEeSKajuY2dy-Z7X6M\"",
+ "etag": "\"H01Z-1ikbwOw463Un2bFZHenx1g/RW9ftCOvW2n6m3RFbvKAMxVUcAE\"",
  "discoveryVersion": "v1",
  "id": "usermessaging:v1",
  "name": "usermessaging",
@@ -107,6 +107,24 @@
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
    ]
+  }
+ },
+ "resources": {
+  "userMessagingEndpoint": {
+   "methods": {
+    "sendNotification": {
+     "id": "usermessaging.userMessagingEndpoint.sendNotification",
+     "path": "sendNotification",
+     "httpMethod": "POST",
+     "request": {
+      "$ref": "MessageRecord",
+      "parameterName": "resource"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/userinfo.email"
+     ]
+    }
+   }
   }
  }
 }

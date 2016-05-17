@@ -66,7 +66,7 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
     private static ImageView img;
     String mCurrentPhotoPath;
     Uri file;
-
+    Intent intent;
     //AUDIO
     private static final String AUDIO_RECORDER_FILE_EXT_3GP = ".3gp";
     private static final String AUDIO_RECORDER_FILE_EXT_MP4 = ".mp4";
@@ -104,7 +104,11 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
 
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         listView.setAdapter(chatAdapter);
-
+        intent = getIntent();
+        String fileUrl = intent.getStringExtra("fileUrl");
+        if(intent.getStringExtra("fileUrl") != null){
+            chatAdapter.add(new ChatMessage(side, "PICTURE", fileType,intent.getStringExtra("fileUrl")));
+        }
         //AUDIO
         buttonSendAudio.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -152,7 +156,7 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
                 try {
                     recorder.prepare();
                     recorder.start();
-                    Toast.makeText(this, "GRABANDO", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Recording", Toast.LENGTH_LONG).show();
                 } catch (IllegalStateException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -167,13 +171,13 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void stopRecording(){
-        Toast.makeText(this, "STOP RECORDING", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Stop recording", Toast.LENGTH_LONG).show();
         if(null != recorder){
             recorder.stop();
             recorder.reset();
             recorder.release();
-            Toast.makeText(this, "SE HA GRABADO", Toast.LENGTH_LONG).show();
-            chatAdapter.add(new ChatMessage(side, "AUDIO", "audio"));
+            Toast.makeText(this, "Saved", Toast.LENGTH_LONG).show();
+            chatAdapter.add(new ChatMessage(side, "AUDIO", "audio",""));
             side = !side;
         }
     }
@@ -187,7 +191,9 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
                 fileType="picture";
                 if(checkCamPermission()){
                     takePicture();
-                    chatAdapter.add(new ChatMessage(side, "PICTURE", fileType));
+                    if(intent.getStringExtra("fileUrl") != null){
+                        chatAdapter.add(new ChatMessage(side, "PICTURE", fileType,intent.getStringExtra("fileUrl")));
+                    }
                 }else {
                     requestCamPermission();
                 }
@@ -197,7 +203,7 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
                 fileType="video";
                 if(checkCamPermission()){
                     recordVideo();
-                    chatAdapter.add(new ChatMessage(side, "VIDEO", fileType));
+                    chatAdapter.add(new ChatMessage(side, "VIDEO", fileType, ""));
                 }else{
                     requestCamPermission();
                 }
@@ -427,7 +433,10 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    Log.d(GlobalClass.TAG, "Error!!");
+                    NetworkResponse response = error.networkResponse;
+                    if(response != null ){
+                        Log.d(GlobalClass.TAG, new String(response.data));
+                    }
                 }
             });
             GlobalClass.getInstance().addToRequestQueue(req);

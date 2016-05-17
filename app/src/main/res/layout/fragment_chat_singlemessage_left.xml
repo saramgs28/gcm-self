@@ -17,6 +17,12 @@
             android:background="@drawable/audio"
             android:paddingLeft="10dip"
             android:textColor="@android:color/primary_text_light" />
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/image_view"
+            android:visibility="invisible"
+            android:scaleType="fitXY"/>
     </LinearLayout>
 
 </LinearLayout>
