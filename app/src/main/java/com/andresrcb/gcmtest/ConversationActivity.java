@@ -136,12 +136,9 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
     }
     private String getFilename(){
         String filepath = Environment.getExternalStorageDirectory().getPath();
-        File file = new File(filepath,AUDIO_RECORDER_FOLDER);
-        if(!file.exists()){
-            Toast.makeText(this, "NO EXISTE", Toast.LENGTH_LONG).show();
-            file.mkdirs();
-        }
-        return (file.getAbsolutePath() + "/" + System.currentTimeMillis() + file_exts[currentFormat]);
+        File fileRecord = getOutputMediaFile(2);
+        file = Uri.fromFile(fileRecord);
+        return (fileRecord.getAbsolutePath());
     }
     private void startRecording() {
         if(checkStoragePermission()){
@@ -176,6 +173,7 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
             recorder.stop();
             recorder.reset();
             recorder.release();
+            sendForUpload(file.getPath());
             Toast.makeText(this, "Saved", Toast.LENGTH_LONG).show();
             chatAdapter.add(new ChatMessage(side, "AUDIO", "audio",""));
             side = !side;
@@ -203,7 +201,10 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
                 fileType="video";
                 if(checkCamPermission()){
                     recordVideo();
-                    chatAdapter.add(new ChatMessage(side, "VIDEO", fileType, ""));
+                    if(intent.getStringExtra("fileUrl") != null){
+                        chatAdapter.add(new ChatMessage(side, "VIDEO", fileType, intent.getStringExtra("fileUrl")));
+                    }
+
                 }else{
                     requestCamPermission();
                 }
@@ -219,7 +220,7 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
         //DEBO RETURN PICTURE
         i= new Intent(MediaStore.ACTION_IMAGE_CAPTURE); //Open camera
         //i= new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-        file = Uri.fromFile(getOutputMediaFile());
+        file = Uri.fromFile(getOutputMediaFile(0));
         i.putExtra(MediaStore.EXTRA_OUTPUT, file);
         startActivityForResult(i, 100);
     }
@@ -227,14 +228,14 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
     public void recordVideo()
     {
         //specifies that the video should be stored on the SD card in a file named myvideo.mp4
-        File mediaFile =
-                new File(Environment.getExternalStorageDirectory().getAbsolutePath()
-                        + "/myvideo.mp4");
-        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(intent, REQUEST_VIDEO_CAPTURE);
-        }
-        Uri videoUri = Uri.fromFile(mediaFile);
+//        File mediaFile =
+//                new File(Environment.getExternalStorageDirectory().getAbsolutePath()
+//                        + "/myvideo.mp4");
+        i = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        file = Uri.fromFile(getOutputMediaFile(1));
+
+        i.putExtra(MediaStore.EXTRA_OUTPUT, file);
+        startActivityForResult(i, 200);
     }
     private void sendForUpload(String path){
         getUploadUrl(path);
@@ -250,6 +251,8 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.d(GlobalClass.TAG, "" + resultCode);
+        Log.d(GlobalClass.TAG, "" + requestCode);
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 if(file!=null){
@@ -269,8 +272,12 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
         if (requestCode == CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 // Video captured and saved to fileUri specified in the Intent
-                Toast.makeText(this, "Video saved to:\n" +
-                        data.getData(), Toast.LENGTH_LONG).show();
+                if(file!=null){
+                    Log.d("File", file.toString());
+                    sendForUpload(file.getPath());
+                }else{
+                    Toast.makeText(this, "Error in file", Toast.LENGTH_LONG).show();
+                }
             } else if (resultCode == RESULT_CANCELED) {
                 // User cancelled the video capture
             } else {
@@ -368,7 +375,7 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
                 break;
         }
     }
-    private static File getOutputMediaFile(){
+    private static File getOutputMediaFile(Integer fileType){
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "MomentChat");
 
@@ -379,9 +386,20 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
         }
 
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        return new File(mediaStorageDir.getPath() + File.separator +
-                "IMG_"+ timeStamp + ".jpg");
+        if(fileType == 0){
+            return new File(mediaStorageDir.getPath() + File.separator +
+                    "IMG_"+ timeStamp + ".jpg");
+        }else if(fileType == 1){
+            return new File(mediaStorageDir.getPath() + File.separator +
+                    "VID_"+ timeStamp + ".mp4");
+        }else if(fileType == 2){
+            return new File(mediaStorageDir.getPath() + File.separator +
+                    "VID_"+ timeStamp + ".3gp");
+        }
+        return null;
+
     }
+
     private void handleUploadUrl(String uploadUrl, String path){
         Log.d(GlobalClass.TAG, "Handling upload");
         finalUpload(uploadUrl, path);

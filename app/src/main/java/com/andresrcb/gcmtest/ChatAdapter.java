@@ -3,6 +3,7 @@ package com.andresrcb.gcmtest;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -29,6 +30,7 @@ public class ChatAdapter extends ArrayAdapter<ChatMessage> {
     private TextView chatText;
     private List chatMessageList = new ArrayList();
     private LinearLayout singleMessageContainer;
+    Intent intent;
     private String filetype;
     private String fileUrl;
     ImageView imageView;
@@ -65,6 +67,10 @@ public class ChatAdapter extends ArrayAdapter<ChatMessage> {
             @Override
             public void onClick(View v) {
                 new DownloadImageTask(imageView).execute(fileUrl);
+                intent = new Intent(getContext(), ActivityDisplay.class);
+
+                intent.putExtra("filetype", filetype);
+                v.getContext().startActivity(intent);
 //                Bundle savedInstanceState = new Bundle();
 //                savedInstanceState.putString("fileUrl", fileUrl);
 //                FragmentMedia fragmentMedia = new FragmentMedia(savedInstanceState);
