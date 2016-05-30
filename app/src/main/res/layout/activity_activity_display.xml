@@ -8,15 +8,6 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.andresrcb.gcmtest.ActivityDisplay">
-    <TextView
-        android:id="@+id/text_display"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="5dip"
-        android:background="@drawable/audio"
-        android:paddingLeft="10dip"
-        android:textColor="@android:color/primary_text_light"/>
 
     <ImageView
         android:layout_width="match_parent"
@@ -24,7 +15,12 @@
         android:id="@+id/image_view"
         android:visibility="invisible"
         android:scaleType="fitXY"/>
-
+    <VideoView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/video_view"
+        android:visibility="invisible"
+        android:scaleType="fitXY"/>
 
 
 </RelativeLayout>

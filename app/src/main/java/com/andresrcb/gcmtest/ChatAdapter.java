@@ -1,13 +1,10 @@
 package com.andresrcb.gcmtest;
 
-import android.app.FragmentManager;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -16,13 +13,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.VideoView;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,8 +28,12 @@ public class ChatAdapter extends ArrayAdapter<ChatMessage> {
     Intent intent;
     private String filetype;
     private String fileUrl;
-    ImageView imageView;
+    ImageView image_received;
+    ImageView image_download;
     Bitmap image;
+
+    VideoView videoView;
+    private ListView listView;
 
     @Override
     public void add(ChatMessage object) {
@@ -54,7 +53,7 @@ public class ChatAdapter extends ArrayAdapter<ChatMessage> {
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.fragment_chat_singlemessage_left, parent, false);
         }
-        imageView =(ImageView) convertView.findViewById(R.id.image_view);
+        image_received =(ImageView) convertView.findViewById(R.id.image_received);
         singleMessageContainer = (LinearLayout) convertView.findViewById(R.id.singleMessageContainer);
         ChatMessage chatMessageObj = getItem(position);
         chatText = (TextView) convertView.findViewById(R.id.singleMessage_left);
@@ -62,15 +61,37 @@ public class ChatAdapter extends ArrayAdapter<ChatMessage> {
         filetype=chatMessageObj.getFileType();
         fileUrl = chatMessageObj.getFileUrl();
 
+        listView = (ListView) convertView.findViewById(R.id.list_messages);
+        videoView = (VideoView) convertView.findViewById(R.id.video_received);
 
         chatText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new DownloadImageTask(imageView).execute(fileUrl);
-                intent = new Intent(getContext(), ActivityDisplay.class);
+                //IMAGE
+                new DownloadImageTask(image_download).execute(fileUrl);
+                //listView.setVisibility(v.INVISIBLE);
+                //image_received.setVisibility(v.VISIBLE);
+                image_download.buildDrawingCache();
+                Bitmap bmap = image_download.getDrawingCache();
+                image_received.setImageBitmap(bmap);
+                image_received.setVisibility(v.VISIBLE);
+                //VIDEO
+                //videoView.setVisibility(v.VISIBLE);
+                //videoView.start();
+                //AUDIO
+                //Descargar audio y ponerlo en create en el segundo apartado
+                //MediaPlayer mp = MediaPlayer.create(this, );
+                //mp.start();
 
-                intent.putExtra("filetype", filetype);
-                v.getContext().startActivity(intent);
+                //intent = new Intent(getContext(), ActivityDisplay.class);
+                //imageView.buildDrawingCache();
+                //Bitmap bitmap = imageView.getDrawingCache();
+
+                //intent.putExtra("BitmapImage", bitmap);
+                //intent.putExtra("filetype", filetype);
+                //v.getContext().startActivity(intent);
+
+
 //                Bundle savedInstanceState = new Bundle();
 //                savedInstanceState.putString("fileUrl", fileUrl);
 //                FragmentMedia fragmentMedia = new FragmentMedia(savedInstanceState);

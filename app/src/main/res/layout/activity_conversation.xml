@@ -10,12 +10,24 @@
     android:orientation="vertical"
     tools:context="com.saram.androidchatmomentchat.ConversationActivity"
     android:id="@+id/conversation_layout">
-
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CONVERSATION NAME"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@+id/textView"
+        android:layout_gravity="center_horizontal"
+        android:textSize="32dp"
+        android:textStyle="bold"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
     <ListView
         android:id="@+id/list_messages"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="80dp">
+        android:layout_below="@+id/textView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
     </ListView>
 
     <Button android:text="Picture"
@@ -45,5 +57,17 @@
         android:layout_toEndOf="@+id/button_picture">
     </Button>
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/image_received"
+        android:visibility="invisible"
+        android:scaleType="fitXY"/>
+    <VideoView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/video_received"
+        android:visibility="invisible"
+        android:scaleType="fitXY"/>
 </RelativeLayout>
 

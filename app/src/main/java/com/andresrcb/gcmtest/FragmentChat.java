@@ -30,8 +30,9 @@ public class FragmentChat extends Fragment{
         View rootView = inflater.inflate(R.layout.fragment_chat, container, false);
         //Test: create the fake contacts. We have to take them from the database
         ArrayContacts=new ArrayList<Contact>();
-        ArrayContacts.add(new Contact("Sara"));
         ArrayContacts.add(new Contact("Sid"));
+        ArrayContacts.add(new Contact("Andres"));
+        ArrayContacts.add(new Contact("Dov"));
 
         list_conversations = (ListView) rootView.findViewById(R.id.list_conversations);
         myAdapter= new ContactChatAdapter(getContext(), ArrayContacts);

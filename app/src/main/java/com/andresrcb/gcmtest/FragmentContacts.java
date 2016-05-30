@@ -29,8 +29,10 @@ public class FragmentContacts extends Fragment {
 
         //Test: create the fake contacts. We have to take them from the database
         ArrayContacts=new ArrayList<Contact>();
-        ArrayContacts.add(new Contact("SaraContact", "5512148288"));
-        ArrayContacts.add(new Contact("SidContact", "5512148289"));
+        ArrayContacts.add(new Contact("Andres", "5512148288"));
+        ArrayContacts.add(new Contact("David", "5512148289"));
+        ArrayContacts.add(new Contact("Dov", "5512148290"));
+        ArrayContacts.add(new Contact("Sid", "5512148291"));
 
         list_contacts = (ListView) rootView.findViewById(R.id.list_contacts);
         myAdapter= new ContactAdapter(getContext(), ArrayContacts);
